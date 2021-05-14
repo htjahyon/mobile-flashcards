@@ -1,0 +1,22 @@
+* User Can Sign Up *
+In the server, the post method is being called that asks for username and password.
+If one or the other, or both, are not provided, an error is thrown. If both are provided,
+the username and password are stored in the database. In the client, if user has not
+already signed up, he or she will be asked to do so.
+
+* User Can Sign In *
+In the server, the post method is being called that asks for username and password.
+If one or the other, or both, are not provided, an error is thrown. If both are provided,
+username is checked for existence in the database, if not, error is thrown. If it
+does exist, the password is checked for validity. If it isn't valid, an error is thrown.
+If both username and password are good, the client will allow access for the user.
+
+* User Can Stay Signed In *
+Nothing is being called in the server. Nothing is done to the database. In the client,
+however, the decode-token.js handles the token as the user refreshes the page. The user
+can still access the website under the same username.
+
+* User Can Sign Out *
+Nothing is being called in the server. Nothing is done to the database. In the client,
+however, the navbar.jsx handles the sign out. Once the user signs out, the webpage shows
+the sign-in and sign-out options.
