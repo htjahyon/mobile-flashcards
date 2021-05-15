@@ -1,0 +1,6 @@
+.header-picture {
+  width: 100%;
+  height: 110px;
+  background-image: url(./images/header.png);
+  justify-content: center;
+}
