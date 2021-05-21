@@ -1,6 +1,83 @@
+img {
+  border: none;
+}
+
 .header-picture {
   width: 100%;
   height: 110px;
   background-image: url(./images/header.png);
   justify-content: center;
+  background-repeat: no-repeat;
+  margin: 0 auto;
+}
+
+.scores,
+.recently-made,
+.share,
+.logout {
+  width: 25%;
+  height: 100px;
+  background-repeat: no-repeat;
+}
+
+.scores {
+  background-image: url(./images/scores.png);
+}
+
+.recently-made {
+  background-image: url(./images/recently-made.png);
+}
+
+.share {
+  background-image: url(./images/share.png);
+}
+
+.logout {
+  background-image: url(./images/logout.png);
+}
+
+h2 {
+  text-align: center;
+}
+
+.folders {
+  width: 100%;
+  height: 200px;
+  background-color: rgb(189, 189, 189);
+  display: flex;
+}
+
+.opened-folder {
+  width: 100px;
+  height: 56px;
+  background-image: url(./images/opened-folder.png);
+  background-repeat: no-repeat;
+}
+
+.add-new-folder {
+  width: 150px;
+  height: 90px;
+  background-image: url(./images/add-new-folder.png);
+}
+
+.folder {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  margin-left: 5px;
+}
+
+.workspace {
+  width: 100%;
+  height: 400px;
+  background-color: rgb(189, 189, 189);
+  display: flex;
+}
+
+.create-new-flashcards {
+  width: 100px;
+  height: 130px;
+  background-image: url(./images/create-new-flashcards.png);
 }

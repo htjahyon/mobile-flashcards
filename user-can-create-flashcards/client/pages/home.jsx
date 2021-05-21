@@ -2,15 +2,14 @@ import React from 'react';
 import Redirect from './redirect';
 import AppContext from '../app-context';
 
-const styles = {
-  gifContainer: {
-    width: '100%',
-    height: '100%',
-    paddingBottom: '75%',
-    position: 'relative'
+const style = {
+  container: {
+    display: 'flex',
+    flexDirection: 'column'
   },
-  gif: {
-    position: 'absolute'
+  icons: {
+    width: '100%',
+    height: '100px'
   }
 };
 
@@ -20,13 +19,26 @@ export default class Home extends React.Component {
     if (!this.context.user) return <Redirect to="sign-in" />;
 
     return (
-      <div style={styles.gifContainer}>
-        <iframe
-          src="https://giphy.com/embed/Ju7l5y9osyymQ"
-          width="100%"
-          height="100%"
-          frameBorder="0"
-          style={styles.gif} />
+      <div style={style.container}>
+        <div style={style.icons}>
+          <img className="scores"></img>
+          <img className="recently-made"></img>
+          <img className="share"></img>
+          <img className="logout"></img>
+        </div>
+        <h2>My Folders</h2>
+        <div className="folders">
+          <div className="folder">
+            <img className="opened-folder"></img>
+            <span className="title">Untitled</span>
+          </div>
+          <img className="add-new-folder"></img>
+        </div>
+        <h2>My Flashcards</h2>
+        <div className="workspace">
+          <img className="create-new-flashcards"></img>
+        </div>
+
       </div>
     );
   }
