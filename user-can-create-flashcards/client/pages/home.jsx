@@ -36,9 +36,8 @@ export default class Home extends React.Component {
         </div>
         <h2>My Flashcards</h2>
         <div className="workspace">
-          <img className="create-new-flashcards"></img>
+        <a href="#create-new"><img className="create-new-flashcards" ></img></a>
         </div>
-
       </div>
     );
   }

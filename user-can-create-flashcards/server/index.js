@@ -75,6 +75,41 @@ app.post('/api/auth/sign-in', (req, res, next) => {
     .catch(err => next(err));
 });
 
+app.post('/api/cards', (req, res, next) => {
+  const { cardId } = req.user;
+  const { question, answer } = req.body;
+  if (!question || !answer) {
+    throw new ClientError(400, 'question and answer are required fields');
+  }
+  const sql = `
+    insert into "cards" ("cardId", "question", "answer")
+    values ($1, $2, $3)
+    returning *
+  `;
+  const params = [cardId, question, answer];
+  db.query(sql, params)
+    .then(result => {
+      const [card] = result.rows;
+      res.status(201).json(card);
+    })
+    .catch(err => next(err));
+});
+
+app.get('/api/cards', (req, res, next) => {
+  const { cardId } = req.user;
+  const sql = `
+    select *
+      from "cards"
+     where "cardId" = $1
+  `;
+  const params = [cardId];
+  db.query(sql, params)
+    .then(result => {
+      res.json(result.rows);
+    })
+    .catch(err => next(err));
+});
+
 app.use(errorMiddleware);
 
 app.listen(process.env.PORT, () => {

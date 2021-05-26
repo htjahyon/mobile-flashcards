@@ -4,6 +4,7 @@ import parseRoute from './parse-route';
 import decodeToken from './decode-token';
 import Auth from './pages/auth';
 import Home from './pages/home';
+import CreateNew from './pages/create-new';
 import NotFound from './pages/not-found';
 import PageContainer from './pages/page-container';
 
@@ -48,6 +49,9 @@ export default class App extends React.Component {
     }
     if (path === 'sign-in' || path === 'sign-up') {
       return <Auth />;
+    }
+    if (path === 'create-new') {
+      return <CreateNew />;
     }
     return <NotFound />;
   }

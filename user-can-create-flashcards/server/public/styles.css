@@ -14,10 +14,19 @@ img {
 .scores,
 .recently-made,
 .share,
-.logout {
+.logout,
+.home-icon,
+.save,
+.previous,
+.next,
+.delete,
+.front-back,
+.add {
   width: 25%;
   height: 100px;
   background-repeat: no-repeat;
+  justify-content: center;
+  cursor: pointer;
 }
 
 .scores {
@@ -80,4 +89,53 @@ h2 {
   width: 100px;
   height: 130px;
   background-image: url(./images/create-new-flashcards.png);
+}
+
+.home-icon {
+  background-image: url(./images/home-icon.png);
+}
+
+.flashcards-title {
+  width: 50%;
+  height: 30px;
+}
+
+.save {
+  background-image: url(./images/save.png);
+}
+
+.space,
+.bottom-space {
+  display: flex;
+  margin-top: 10%;
+  justify-content: center;
+}
+
+.flashcard {
+  width: 80%;
+  height: 300px;
+}
+
+.previous {
+  background-image: url(./images/previous.png);
+}
+
+.next {
+  background-image: url(./images/next.png);
+}
+
+.track-cards {
+  justify-content: center;
+}
+
+.delete {
+  background-image: url(./images/delete.png);
+}
+
+.front-back {
+  background-image: url(./images/front-back.png);
+}
+
+.add {
+  background-image: url(./images/add.png);
 }
