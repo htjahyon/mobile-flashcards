@@ -1,7 +1,7 @@
 ---
 name: Feature 1
 about: Use this template for adding a new feature to the app.
-title: "Feature: User can create log in."
+title: "Feature: User can log in."
 ---
 ​
 ## ⚙️ Feature

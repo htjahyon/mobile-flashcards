@@ -19,16 +19,16 @@ export default class CreateNew extends React.Component {
     super(props);
     this.flashcards = [
       {
-        front: 'Add question.',
-        back: 'Add answer.'
+        question: 'Add question.',
+        answer: 'Add answer.'
       }
     ];
     this.index = 0;
+    this.question = true;
     this.state =
     {
       title: 'Untitled',
-      content: this.flashcards[0].front,
-      front: true
+      content: this.flashcards[0].question
     };
     this.onChangeTitle = this.onChangeTitle.bind(this);
     this.onChangeContent = this.onChangeContent.bind(this);
@@ -49,32 +49,54 @@ export default class CreateNew extends React.Component {
   }
 
   saveCard() {
-    if (this.state.front) { this.flashcards[this.index].front = this.state.content; } else { this.flashcards[this.index].back = this.state.content; }
+    if (this.question) {
+      this.flashcards[this.index].question = this.state.content;
+    } else {
+      this.flashcards[this.index].answer = this.state.content;
+    }
+  }
+
+  saveAll() {
+    const req = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(this.flashcards)
+    };
+    fetch('/api/cards', req)
+      .then(res => res.json())
+      .then(result => {
+
+      });
   }
 
   previousClick() {
+    this.saveCard();
     if (this.index > 0) {
       this.index--;
       this.setState(
         {
-          content: this.flashcards[this.index].front
+          content: this.flashcards[this.index].question
         }
       );
     }
   }
 
   nextClick() {
+    this.saveCard();
     if (this.index < this.flashcards.length - 1) {
       this.index++;
       this.setState(
         {
-          content: this.flashcards[this.index].front
+          content: this.flashcards[this.index].question
         }
       );
     }
   }
 
   deleteCard() {
+    this.question = true;
     if (this.index > 0 && this.flashcards.length > 1) {
       this.flashcards.splice(this.index, 1);
       this.index--;
@@ -83,38 +105,45 @@ export default class CreateNew extends React.Component {
     } else {
       this.flashcards[this.index] =
       {
-        front: 'Add question.',
-        back: 'Add answer.'
+        question: 'Add question.',
+        answer: 'Add answer.'
       };
     }
-    this.setState({ content: this.flashcards[this.index].front });
+    this.setState({ content: this.flashcards[this.index].question });
   }
 
   flipCard() {
     this.saveCard();
-    const flip = !this.state.front;
-    this.setState({ front: flip });
-    if (this.state.front) { this.setState({ content: this.flashcards[this.index].front }); } else { this.setState({ content: this.flashcards[this.index].back }); }
+    this.question = !this.question;
+    if (this.question) {
+      this.setState({ content: this.flashcards[this.index].question });
+    } else {
+      this.setState({ content: this.flashcards[this.index].answer });
+    }
   }
 
   addCard() {
-    this.index++;
+    this.saveCard();
+    this.index = this.flashcards.length;
+    this.question = true;
     this.flashcards.push(
       {
-        front: 'Add question.',
-        back: 'Add answer.'
+        question: 'Add question.',
+        answer: 'Add answer.'
       }
     );
-    this.setState({ content: this.flashcards[this.index].front });
+    this.setState({ content: this.flashcards[this.index].question });
   }
 
   render() {
-
+    const sideText = this.question === true
+      ? 'Question'
+      : 'Answer';
     return (
       <div style={style.container}>
         <div style={style.icons}>
-          <a href="#"><img className="home-icon"></img></a>
-          <form className="w-100">
+        <a href="#"><img className="home-icon"></img></a>
+          <form className="w-100 title">
             <div className="mb-3">
               <input
                 required
@@ -127,14 +156,14 @@ export default class CreateNew extends React.Component {
                 className="flashcards-title bg-light" />
             </div>
           </form>
-          <img className="save" onClick={this.saveCard}></img>
+          <img className="save" onClick={this.saveAll}></img>
         </div>
         <h2 className="track-cards">{this.index + 1}/{this.flashcards.length}</h2>
         <div className="space">
           <img className="previous" onClick={this.previousClick} />
             <form className="w-100">
               <div className="mb-3">
-                <input
+                <textarea
                   required
                   autoFocus
                   id="flashcardsContent"
@@ -142,14 +171,15 @@ export default class CreateNew extends React.Component {
                   name="flashcardsContent"
                   value={this.state.content}
                   onChange={this.onChangeContent}
-                  className="form-control bg-light" />
+                  className="form-control bg-light content" />
               </div>
             </form>
           <img className="next" onClick={this.nextClick} />
         </div>
+        <h2 className="track-cards">{sideText}</h2>
         <div className="bottom-space">
           <img className="delete" onClick={this.deleteCard}></img>
-          <img className="front-back" onClick={this.flipCard}></img>
+          <img className="question-answer" onClick={this.flipCard}></img>
           <img className="add" onClick={this.addCard}></img>
         </div>
       </div>

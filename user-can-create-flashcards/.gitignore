@@ -1,6 +1,0 @@
-server/public/main.js*
-node_modules
-.DS_Store
-.vscode
-*.log
-.env

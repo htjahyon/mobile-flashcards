@@ -6,11 +6,12 @@
   "main": "server/index.js",
   "scripts": {
     "build": "webpack",
+    "watch": "webpack --watch",
     "start": "node server/index.js",
     "dev": "npm-run-all --silent --parallel dev:*",
     "dev:client": "webpack serve --mode=development",
     "dev:server": "nodemon server/index.js",
-    "db:import": "bash scripts/db-import.bash"
+    "db:import": "bash database/db-import.bash"
   },
   "husky": {
     "hooks": {
@@ -57,7 +58,7 @@
     "stylelint": "^13.8.0",
     "stylelint-config-recommended": "^3.0.0",
     "stylelint-config-standard": "^20.0.0",
-    "webpack": "^5.11.1",
+    "webpack": "^5.37.0",
     "webpack-cli": "^4.3.1",
     "webpack-dev-server": "^3.11.1"
   }
