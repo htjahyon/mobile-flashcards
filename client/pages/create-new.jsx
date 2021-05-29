@@ -40,6 +40,20 @@ export default class CreateNew extends React.Component {
     this.addCard = this.addCard.bind(this);
   }
 
+  componentDidMount() {
+    const req = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(this.flashcards[0])
+    };
+    fetch('/api/cards', req)
+      .then(res => res.json())
+      .then(result => { })
+      .catch(error => console.error('Post error!', error));
+  }
+
   onChangeTitle(event) {
     this.setState({ title: event.target.value });
   }
@@ -54,25 +68,26 @@ export default class CreateNew extends React.Component {
     } else {
       this.flashcards[this.index].answer = this.state.content;
     }
-  }
-
-  saveAll() {
     const req = {
-      method: 'POST',
+      method: 'PATCH',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(this.flashcards)
+      body: JSON.stringify(this.flashcards[this.index])
     };
-    fetch('/api/cards', req)
+    fetch(`/api/cards/${this.flashcards[this.index].cardId}`, req)
       .then(res => res.json())
-      .then(result => {
+      .then(result => {})
+      .catch(error => console.error('Patch error!', error));
+  }
 
-      });
+  saveAll() {
+    // save flashcards into a folder
   }
 
   previousClick() {
     this.saveCard();
+    this.question = true;
     if (this.index > 0) {
       this.index--;
       this.setState(
@@ -85,6 +100,7 @@ export default class CreateNew extends React.Component {
 
   nextClick() {
     this.saveCard();
+    this.question = true;
     if (this.index < this.flashcards.length - 1) {
       this.index++;
       this.setState(
@@ -97,17 +113,26 @@ export default class CreateNew extends React.Component {
 
   deleteCard() {
     this.question = true;
+    const req = {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    };
     if (this.index > 0 && this.flashcards.length > 1) {
       this.flashcards.splice(this.index, 1);
       this.index--;
+      fetch(`/api/cards/${this.flashcards[this.index].cardId}`, req);
     } else if (this.index === 0 && this.flashcards.length > 1) {
       this.flashcards.splice(this.index, 1);
+      fetch(`/api/cards/${this.flashcards[this.index].cardId}`, req);
     } else {
       this.flashcards[this.index] =
       {
         question: 'Add question.',
         answer: 'Add answer.'
       };
+      this.componentDidMount();
     }
     this.setState({ content: this.flashcards[this.index].question });
   }
@@ -132,6 +157,17 @@ export default class CreateNew extends React.Component {
         answer: 'Add answer.'
       }
     );
+    const req = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(this.flashcards[this.index])
+    };
+    fetch('/api/cards', req)
+      .then(res => res.json())
+      .then(result => { })
+      .catch(error => console.error('Post error!', error));
     this.setState({ content: this.flashcards[this.index].question });
   }
 
@@ -143,7 +179,7 @@ export default class CreateNew extends React.Component {
       <div style={style.container}>
         <div style={style.icons}>
         <a href="#"><img className="home-icon"></img></a>
-          <form className="w-100 title">
+          <form className="w-100 create-title">
             <div className="mb-3">
               <input
                 required

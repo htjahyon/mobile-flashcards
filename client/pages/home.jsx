@@ -14,6 +14,36 @@ const style = {
 };
 
 export default class Home extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      folders: [],
+      cards: []
+    };
+    this.displayFolders = this.displayFolders.bind(this);
+    this.displayCards = this.displayCards.bind(this);
+  }
+
+  displayFolders() {
+
+  }
+
+  displayCards() {
+    fetch('/api/folderCards')
+      .then(res => res.json())
+      .then(data => this.setState({
+        cards: data
+      }))
+      .catch(err => console.error('Fetch failed!', err));
+    this.state.cards.map(cards => (
+          <div key={cards.id}>
+            <img className="cards" />
+            <span className="title">{cards.title}</span>
+          </div>
+    )
+    );
+  }
+
   render() {
 
     if (!this.context.user) return <Redirect to="sign-in" />;
@@ -36,7 +66,8 @@ export default class Home extends React.Component {
         </div>
         <h2>My Flashcards</h2>
         <div className="workspace">
-        <a href="#create-new"><img className="create-new-flashcards" ></img></a>
+          {this.displayCards}
+          <a href="#create-new"><img className="create-new-flashcards" ></img></a>
         </div>
       </div>
     );

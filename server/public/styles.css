@@ -17,8 +17,6 @@ img {
 .logout,
 .home-icon,
 .save,
-.previous,
-.next,
 .delete,
 .question-answer,
 .add {
@@ -75,7 +73,11 @@ h2 {
 }
 
 .title {
-  margin-left: 20%;
+  margin-left: 5%;
+}
+
+.create-title {
+  margin-left: 25%;
 }
 
 .workspace {
@@ -85,15 +87,22 @@ h2 {
   display: flex;
 }
 
-.create-new-flashcards {
+.cards,
+.create-new-flashcards,
+.home-icon {
   width: 100px;
   height: 130px;
+}
+
+.cards {
+  background-image: url(./images/cards.png);
+}
+
+.create-new-flashcards {
   background-image: url(./images/create-new-flashcards.png);
 }
 
 .home-icon {
-  width: 100px;
-  height: 130px;
   background-image: url(./images/home-icon.png);
 }
 
@@ -119,10 +128,16 @@ h2 {
 }
 
 .previous {
+  width: 15%;
+  height: 100px;
+  background-repeat: no-repeat;
   background-image: url(./images/previous.png);
 }
 
 .next {
+  width: 15%;
+  height: 100px;
+  background-repeat: no-repeat;
   background-image: url(./images/next.png);
 }
 

@@ -1,7 +1,7 @@
 ---
 name: Feature 3
 about: Use this template for adding a new feature to the app.
-title: "Feature: Users can save their flashcards."
+title: "Feature: User can save flashcards."
 ---
 
 ## ⚙️ Feature

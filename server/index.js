@@ -5,7 +5,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const ClientError = require('./client-error');
 const errorMiddleware = require('./error-middleware');
-
+const staticMiddleware = require('./static-middleware');
 const db = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
@@ -18,6 +18,7 @@ const app = express();
 const jsonMiddleware = express.json();
 
 app.use(jsonMiddleware);
+app.use(staticMiddleware);
 
 app.post('/api/auth/sign-up', (req, res, next) => {
   const { username, password, email } = req.body;

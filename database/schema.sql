@@ -21,6 +21,7 @@ CREATE TABLE "folders" (
 CREATE TABLE "folderCards" (
     "folderCardId"  serial NOT NULL,
     "folderId"      integer NOT NULL,
+    "cardsTitle"     text NOT NULL,
     "cardId"        integer NOT NULL,
     CONSTRAINT "folderCards_pk" PRIMARY KEY ("folderCardId")
 ) WITH (
