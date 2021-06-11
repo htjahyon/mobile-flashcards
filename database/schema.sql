@@ -22,13 +22,13 @@ CREATE TABLE "folderCards" (
     "folderCardId"  serial NOT NULL,
     "folderId"      integer NOT NULL,
     "cardsTitle"     text NOT NULL,
-    "cardId"        integer NOT NULL,
     CONSTRAINT "folderCards_pk" PRIMARY KEY ("folderCardId")
 ) WITH (
   OIDS=FALSE
 );
 CREATE TABLE "cards" (
     "cardId"    serial NOT NULL,
+    "folderCardId"  integer NOT NULL,
     "question"  text NOT NULL,
     "answer"    text NOT NULL,
     CONSTRAINT "cards_pk" PRIMARY KEY ("cardId")
@@ -37,4 +37,4 @@ CREATE TABLE "cards" (
 );
 ALTER TABLE "folders" ADD CONSTRAINT "folders_fk0" FOREIGN KEY ("userId") REFERENCES "users"("userId");
 ALTER TABLE "folderCards" ADD CONSTRAINT "folderCards_fk0" FOREIGN KEY ("folderId") REFERENCES "folders"("folderId");
-ALTER TABLE "folderCards" ADD CONSTRAINT "folderCards_fk1" FOREIGN KEY ("cardId") REFERENCES "cards"("cardId");
+ALTER TABLE "cards" ADD CONSTRAINT "cards_fk0" FOREIGN KEY ("cardId") REFERENCES "cards"("cardId");

@@ -16,7 +16,8 @@ img {
 .share,
 .logout,
 .home-icon,
-.save,
+.save-all,
+.delete-all,
 .delete,
 .question-answer,
 .add {
@@ -54,17 +55,32 @@ h2 {
   display: flex;
 }
 
-.opened-folder {
+.batch,
+.opened-folder,
+.closed-folder {
   width: 100px;
   height: 56px;
-  background-image: url(./images/opened-folder.png);
   background-repeat: no-repeat;
+  cursor: pointer;
+}
+
+.batch {
+  background-image: url(./images/batch.png);
+}
+
+.opened-folder {
+  background-image: url(./images/opened-folder.png);
+}
+
+.closed-folder {
+  background-image: url(./images/closed-folder.png);
 }
 
 .add-new-folder {
   width: 150px;
   height: 90px;
   background-image: url(./images/add-new-folder.png);
+  cursor: pointer;
 }
 
 .folder {
@@ -73,7 +89,8 @@ h2 {
 }
 
 .title {
-  margin-left: 5%;
+  font-size: 15px;
+  margin-left: 5px;
 }
 
 .create-title {
@@ -87,15 +104,10 @@ h2 {
   display: flex;
 }
 
-.cards,
 .create-new-flashcards,
 .home-icon {
   width: 100px;
   height: 130px;
-}
-
-.cards {
-  background-image: url(./images/cards.png);
 }
 
 .create-new-flashcards {
@@ -111,8 +123,12 @@ h2 {
   height: 30px;
 }
 
-.save {
-  background-image: url(./images/save.png);
+.save-all {
+  background-image: url(./images/save-all.png);
+}
+
+.delete-all {
+  background-image: url(./images/delete-all.png);
 }
 
 .space,
@@ -155,4 +171,18 @@ h2 {
 
 .add {
   background-image: url(./images/add.png);
+}
+
+.trash-can {
+  width: 25%;
+  height: 200px;
+  background-repeat: no-repeat;
+  background-image: url(./images/trash-can.png);
+}
+
+.scores-results {
+  width: 25%;
+  height: 200px;
+  background-repeat: no-repeat;
+  background-image: url(./images/scores-results.png);
 }

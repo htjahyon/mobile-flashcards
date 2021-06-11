@@ -16,57 +16,105 @@ const style = {
 export default class Home extends React.Component {
   constructor(props) {
     super(props);
+    this.folders = null;
+    this.batches = null;
+    this.maxFolders = 5;
     this.state = {
       folders: [],
-      cards: []
+      batches: [],
+      openedId: 0
     };
+
     this.displayFolders = this.displayFolders.bind(this);
     this.displayCards = this.displayCards.bind(this);
+    this.addNewFolder = this.addNewFolder.bind(this);
+    this.clickFolder = this.clickFolder.bind(this);
+  }
+
+  componentDidMount() {
+    this.displayFolders();
   }
 
   displayFolders() {
-
+    fetch('/api/folders')
+      .then(res => res.json())
+      .then(data => {
+        this.setState({
+          folders: data
+        });
+      })
+      .catch(err => console.error('Fetch folders failed!', err));
   }
 
-  displayCards() {
+  displayCards(batchId) {
     fetch('/api/folderCards')
       .then(res => res.json())
-      .then(data => this.setState({
-        cards: data
-      }))
+      .then(data => {
+        this.setState({
+          batches: data
+        });
+      })
       .catch(err => console.error('Fetch failed!', err));
-    this.state.cards.map(cards => (
-          <div key={cards.id}>
-            <img className="cards" />
-            <span className="title">{cards.title}</span>
-          </div>
-    )
-    );
+  }
+
+  addNewFolder() {
+    if (this.folders.length >= this.maxFolders) return;
+    const folder = {
+      folderName: 'Untitled',
+      userId: 1
+    };
+    const req = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(folder)
+    };
+    fetch('/api/folders/', req)
+      .then(res => res.json())
+      .then(result => { })
+      .catch(error => console.error('Post folder error!', error));
+    this.displayFolders();
+  }
+
+  clickFolder(folderId) {
+    this.setState({ openedId: folderId });
+    this.displayCards(1);
   }
 
   render() {
+    this.folders = this.state.folders.map(folder => (
+      <div key={folder.folderId}>
+        <div className={`folder ${folder.folderId === this.state.openedId ? 'opened-folder' : 'closed-folder'}`}
+        onClick={() => this.clickFolder(folder.folderId)}></div>
+        <span className="title">{folder.folderName}</span>
+      </div>
+    ));
+    this.batches = this.state.batches.map(batch => (
+      <div className="folder" key={batch.folderCardId}>
+        <img className="batch" />
+        <span className="title">{batch.cardsTitle}</span>
+      </div>
+    ));
 
     if (!this.context.user) return <Redirect to="sign-in" />;
-
+    const { handleSignOut } = this.context;
     return (
       <div style={style.container}>
         <div style={style.icons}>
-          <img className="scores"></img>
+          <a href="#scores"><img className="scores"></img></a>
           <img className="recently-made"></img>
           <img className="share"></img>
-          <img className="logout"></img>
+          <img className="logout" onClick={handleSignOut}></img>
         </div>
         <h2>My Folders</h2>
         <div className="folders">
-          <div className="folder">
-            <img className="opened-folder"></img>
-            <span className="title">Untitled</span>
-          </div>
-          <img className="add-new-folder"></img>
+          {this.folders}
+          <img className="add-new-folder" onClick={this.addNewFolder}></img>
         </div>
         <h2>My Flashcards</h2>
         <div className="workspace">
-          {this.displayCards}
+          {this.batches}
           <a href="#create-new"><img className="create-new-flashcards" ></img></a>
         </div>
       </div>

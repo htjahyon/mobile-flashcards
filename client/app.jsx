@@ -5,6 +5,7 @@ import decodeToken from './decode-token';
 import Auth from './pages/auth';
 import Home from './pages/home';
 import CreateNew from './pages/create-new';
+import Scores from './pages/scores';
 import NotFound from './pages/not-found';
 import PageContainer from './pages/page-container';
 
@@ -52,6 +53,9 @@ export default class App extends React.Component {
     }
     if (path === 'create-new') {
       return <CreateNew />;
+    }
+    if (path === 'scores') {
+      return <Scores />;
     }
     return <NotFound />;
   }
