@@ -14,21 +14,19 @@ const style = {
   }
 };
 
-export default class CreateNew extends React.Component {
+export default class EditCards extends React.Component {
   constructor(props) {
     super(props);
     this.flashcards = [];
     this.index = 0;
-    this.priorLength = 1;
     this.question = true;
     this.isDeletedAll = false;
-    this.title = 'Untitled';
-    this.folderId = this.props.folderId;
-    this.batchId = null;
+    this.title = this.props.batch.cardsTitle;
+    this.batch = this.props.batch;
     this.state =
     {
-      title: 'Untitled',
-      content: 'Add question.'
+      title: this.title,
+      content: ''
     };
     this.onChangeTitle = this.onChangeTitle.bind(this);
     this.onChangeContent = this.onChangeContent.bind(this);
@@ -43,25 +41,17 @@ export default class CreateNew extends React.Component {
   }
 
   componentDidMount() {
-    this.title = this.state.title;
-    const batch = {
-      folderId: this.folderId,
-      cardsTitle: this.title
-    };
-    let req = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(batch)
-    };
-    fetch('/api/batches', req)
+    fetch(`/api/cards/${this.batch.batchId}`)
       .then(res => res.json())
       .then(result => {
-        this.batchId = result.batchId;
+        this.flashcards = result;
+        this.setState({ content: this.flashcards[0].question });
       })
-      .catch(error => console.error('Post batches error!', error));
-    req = {
+      .catch(error => console.error('Get index error!', error));
+  }
+
+  startOver() {
+    const req = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -113,7 +103,8 @@ export default class CreateNew extends React.Component {
     this.title = this.state.title;
     this.saveCard(this.index);
     const batch = {
-      folderId: this.folderId,
+      folderId: this.batch.folderId,
+      batchId: this.batch.batchId,
       cardsTitle: this.title
     };
     const req = {
@@ -123,7 +114,7 @@ export default class CreateNew extends React.Component {
       },
       body: JSON.stringify(batch)
     };
-    fetch(`/api/batches/${this.batchId}`, req)
+    fetch(`/api/batches/${this.batch.batchId}`, req)
       .then(res => res.json())
       .then(result => { })
       .catch(error => console.error('Post batches error!', error));
@@ -136,7 +127,7 @@ export default class CreateNew extends React.Component {
         'Content-Type': 'application/json'
       }
     };
-    fetch(`/api/batches/${this.batchId}`, req)
+    fetch(`/api/batches/${this.batch.batchId}`, req)
       .then(res => res.json())
       .then(result => { })
       .catch(error => console.error('Delete batches error!', error));
@@ -178,35 +169,26 @@ export default class CreateNew extends React.Component {
 
   deleteCard(index) {
     this.question = true;
-    fetch('/api/cards')
+    const cardId = this.flashcards.cardId;
+    const req = {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    };
+    fetch(`/api/cards/${cardId}`, req)
       .then(res => res.json())
-      .then(result => {
-        const cardNum = result[index].cardId;
-        const req = {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        };
-        if (this.index > 0 && this.flashcards.length > 1) {
-          this.flashcards.splice(index, 1);
-          this.index--;
-          fetch(`/api/cards/${cardNum}`, req);
-        } else if (this.index === 0 && this.flashcards.length > 1) {
-          this.flashcards.splice(index, 1);
-          fetch(`/api/cards/${cardNum}`, req);
-        } else {
-          this.flashcards[this.index] =
-        {
-          batchId: this.batchId,
-          question: 'Add question.',
-          answer: 'Add answer.'
-        };
-          this.componentDidMount();
-        }
-        this.setState({ content: this.flashcards[this.index].question });
-      })
+      .then(result => { })
       .catch(error => console.error('Get error!', error));
+    this.setState({ content: this.flashcards[this.index].question });
+    if (this.index > 0 && this.flashcards.length > 1) {
+      this.flashcards.splice(index, 1);
+      this.index--;
+    } else if (this.index === 0 && this.flashcards.length > 1) {
+      this.flashcards.splice(index, 1);
+    } else {
+      this.startOver();
+    }
   }
 
   flipCard() {
@@ -224,7 +206,7 @@ export default class CreateNew extends React.Component {
     this.index = this.flashcards.length;
     this.question = true;
     const card = {
-      batchId: this.batchId,
+      batchId: this.batch.batchId,
       question: 'Add question.',
       answer: 'Add answer.'
     };
@@ -249,60 +231,60 @@ export default class CreateNew extends React.Component {
       ? 'Question'
       : 'Answer';
     let display =
-        <div style={style.container}>
-          <h1 className="track-cards">Flashcards Deleted!</h1>
-          <img className="trash-can track-cards"></img>
-          <a href="#" className="track-cards">Go Home</a>
-        </div>;
+      <div style={style.container}>
+        <h1 className="track-cards">Flashcards Deleted!</h1>
+        <img className="trash-can track-cards"></img>
+        <a href="#" className="track-cards">Go Home</a>
+      </div>;
     if (!this.isDeletedAll) {
       display =
         <div style={style.container}>
-        <div style={style.icons}>
-          <a href="#"><img className="home-icon"></img></a>
-          <form className="w-100 create-title">
-            <div className="mb-3">
-              <input
-                required
-                autoFocus
-                id="flashcardsName"
-                type="text"
-                name="flashcardsName"
-                value={this.state.title}
-                onChange={this.onChangeTitle}
-                className="flashcards-title bg-light" />
-            </div>
-          </form>
-          <img className="save-all" onClick={this.saveAll}></img>
-          <img className="delete-all" onClick={this.deleteAll}></img>
-        </div>
-        <h2 className="track-cards">{this.index + 1}/{this.flashcards.length}</h2>
-        <div className="space">
-          <img className="previous" onClick={this.previousClick} />
-          <form className="w-100">
-            <div className="mb-3">
-              <textarea
-                required
-                autoFocus
-                id="flashcardsContent"
-                type="text"
-                name="flashcardsContent"
-                value={this.state.content}
-                onChange={this.onChangeContent}
-                className="form-control bg-light content" />
-            </div>
-          </form>
-          <img className="next" onClick={this.nextClick} />
-        </div>
-        <h2 className="track-cards">{sideText}</h2>
-        <div className="bottom-space">
-          <img className="delete" onClick={() => this.deleteCard(this.index)}></img>
-          <img className="question-answer" onClick={this.flipCard}></img>
-          <img className="add" onClick={this.addCard}></img>
-        </div>
-      </div>;
+          <div style={style.icons}>
+            <a href="#"><img className="home-icon"></img></a>
+            <form className="w-100 create-title">
+              <div className="mb-3">
+                <input
+                  required
+                  autoFocus
+                  id="flashcardsName"
+                  type="text"
+                  name="flashcardsName"
+                  value={this.state.title}
+                  onChange={this.onChangeTitle}
+                  className="flashcards-title bg-light" />
+              </div>
+            </form>
+            <img className="save-all" onClick={this.saveAll}></img>
+            <img className="delete-all" onClick={this.deleteAll}></img>
+          </div>
+          <h2 className="track-cards">{this.index + 1}/{this.flashcards.length}</h2>
+          <div className="space">
+            <img className="previous" onClick={this.previousClick} />
+            <form className="w-100">
+              <div className="mb-3">
+                <textarea
+                  required
+                  autoFocus
+                  id="flashcardsContent"
+                  type="text"
+                  name="flashcardsContent"
+                  value={this.state.content}
+                  onChange={this.onChangeContent}
+                  className="form-control bg-light content" />
+              </div>
+            </form>
+            <img className="next" onClick={this.nextClick} />
+          </div>
+          <h2 className="track-cards">{sideText}</h2>
+          <div className="bottom-space">
+            <img className="delete" onClick={() => this.deleteCard(this.index)}></img>
+            <img className="question-answer" onClick={this.flipCard}></img>
+            <img className="add" onClick={this.addCard}></img>
+          </div>
+        </div>;
     }
 
     return (display);
   }
 }
-CreateNew.contextType = AppContext;
+EditCards.contextType = AppContext;

@@ -77,16 +77,16 @@ app.post('/api/auth/sign-in', (req, res, next) => {
 });
 
 app.post('/api/cards', (req, res, next) => {
-  const { folderCardId, question, answer } = req.body;
-  if (!folderCardId || !question || !answer) {
-    throw new ClientError(400, 'folderCardId, question, and answer are required fields');
+  const { batchId, question, answer } = req.body;
+  if (!batchId || !question || !answer) {
+    throw new ClientError(400, 'batchId, question, and answer are required fields');
   }
   const sql = `
-    insert into "cards" ("folderCardId", "question", "answer")
+    insert into "cards" ("batchId", "question", "answer")
     values ($1, $2, $3)
     returning *
   `;
-  const params = [folderCardId, question, answer];
+  const params = [batchId, question, answer];
   db.query(sql, params)
     .then(result => {
       const [card] = result.rows;
@@ -111,30 +111,30 @@ app.get('/api/cards', (req, res) => {
     });
 });
 
-app.get('/api/cards/:cardId', (req, res, next) => {
-  const cardId = parseInt(req.params.cardId, 10);
-  if (!Number.isInteger(cardId) || cardId <= 0) {
+app.get('/api/cards/:batchId', (req, res, next) => {
+  const batchId = parseInt(req.params.batchId, 10);
+  if (!Number.isInteger(batchId) || batchId <= 0) {
     res.status(400).json({
-      error: '"cardId" must be a positive integer'
+      error: '"batchId" must be a positive integer'
     });
     return;
   }
   const sql = `
     select *
       from "cards"
-     where "cardId" = $1;
+     where "batchId" = $1;
   `;
 
-  const params = [cardId];
+  const params = [batchId];
   db.query(sql, params)
     .then(result => {
-      const card = result.rows[0];
-      if (!card) {
+      const batch = result.rows;
+      if (!batch) {
         res.status(404).json({
-          error: `Cannot find grade with "cardId" ${cardId}`
+          error: `Cannot find grade with "batchId" ${batchId}`
         });
       } else {
-        res.json(card);
+        res.json(batch);
       }
     })
     .catch(err => {
@@ -223,9 +223,9 @@ app.delete('/api/cards/:cardId', (req, res) => {
     });
 });
 
-app.get('/api/folderCards', (req, res) => {
+app.get('/api/batches', (req, res) => {
   const sql = `select *
-                from "folderCards";
+                from "batches";
               `;
   db.query(sql)
     .then(result => {
@@ -239,14 +239,48 @@ app.get('/api/folderCards', (req, res) => {
     });
 });
 
-app.post('/api/folderCards', (req, res, next) => {
+app.get('/api/batches/:folderId', (req, res, next) => {
+  const folderId = parseInt(req.params.folderId, 10);
+  if (!Number.isInteger(folderId) || folderId <= 0) {
+    res.status(400).json({
+      error: '"folderId" must be a positive integer'
+    });
+    return;
+  }
+  const sql = `
+    select *
+      from "batches"
+     where "folderId" = $1;
+  `;
+
+  const params = [folderId];
+  db.query(sql, params)
+    .then(result => {
+      const batches = result.rows;
+      if (!batches) {
+        res.status(404).json({
+          error: `Cannot find grade with "folderId" ${folderId}`
+        });
+      } else {
+        res.json(batches);
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({
+        error: 'An unexpected error occurred.'
+      });
+    });
+});
+
+app.post('/api/batches', (req, res, next) => {
   let { folderId, cardsTitle } = req.body;
   folderId = parseInt(folderId, 10);
   if (!folderId || !cardsTitle) {
     throw new ClientError(400, 'folderId and cardsTitle are required fields.');
   }
   const sql = `
-    insert into "folderCards" ("folderId", "cardsTitle")
+    insert into "batches" ("folderId", "cardsTitle")
     values ($1, $2)
     returning *
   `;
@@ -259,11 +293,11 @@ app.post('/api/folderCards', (req, res, next) => {
     .catch(err => next(err));
 });
 
-app.patch('/api/folderCards/:folderCardId', (req, res) => {
-  const folderCardId = parseInt(req.params.folderCardId, 10);
-  if (!Number.isInteger(folderCardId) || folderCardId <= 0) {
+app.patch('/api/batches/:batchId', (req, res) => {
+  const batchId = parseInt(req.params.batchId, 10);
+  if (!Number.isInteger(batchId) || batchId <= 0) {
     res.status(400).json({
-      error: '"folderCardId" must be a positive integer.'
+      error: '"batchId" must be a positive integer.'
     });
     return;
   }
@@ -276,20 +310,20 @@ app.patch('/api/folderCards/:folderCardId', (req, res) => {
     return;
   }
 
-  const sql = `update "folderCards"
+  const sql = `update "batches"
              set "folderId" = $2,
                  "cardsTitle" = $3
-             where "folderCardId" = $1
+             where "batchId" = $1
              returning *;
              `;
 
-  const params = [folderCardId, folderId, cardsTitle];
+  const params = [batchId, folderId, cardsTitle];
   db.query(sql, params)
     .then(result => {
       const batch = result.rows[0];
       if (!batch) {
         res.status(404).json({
-          error: `Cannot find batch with "folderCardId" ${folderCardId}`
+          error: `Cannot find batch with "batchId" ${batchId}`
         });
       } else {
         res.status(200).json(batch);
@@ -303,29 +337,29 @@ app.patch('/api/folderCards/:folderCardId', (req, res) => {
     });
 });
 
-app.delete('/api/folderCards/:folderCardId', (req, res) => {
-  const folderCardId = parseInt(req.params.folderCardId, 10);
-  if (!Number.isInteger(folderCardId) || folderCardId <= 0) {
+app.delete('/api/batches/:batchId', (req, res) => {
+  const batchId = parseInt(req.params.batchId, 10);
+  if (!Number.isInteger(batchId) || batchId <= 0) {
     res.status(400).json({
-      error: '"folderCardId" must be a positive integer.'
+      error: '"batchId" must be a positive integer.'
     });
     return;
   }
   const sql = `
-    delete from "folderCards"
-     where "folderCardId" = $1
+    delete from "batches"
+     where "batchId" = $1
      returning *;
   `;
-  const params = [folderCardId];
+  const params = [batchId];
   db.query(sql, params)
     .then(result => {
-      const batch = result.rows[0];
-      if (!batch) {
+      const batches = result.rows;
+      if (!batches) {
         res.status(404).json({
-          error: `Cannot find card with "foldercardId" ${folderCardId}`
+          error: `Cannot find card with "batchId" ${batchId}`
         });
       } else {
-        res.status(204).json(batch);
+        res.status(204).json(batches);
       }
     })
     .catch(err => {
@@ -343,6 +377,40 @@ app.get('/api/folders', (req, res) => {
   db.query(sql)
     .then(result => {
       res.status(200).json(result.rows);
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({
+        error: 'An unexpected error occurred.'
+      });
+    });
+});
+
+app.get('/api/folders/:folderId', (req, res, next) => {
+  const folderId = parseInt(req.params.folderId, 10);
+  if (!Number.isInteger(folderId) || folderId <= 0) {
+    res.status(400).json({
+      error: '"folderId" must be a positive integer'
+    });
+    return;
+  }
+  const sql = `
+    select *
+      from "folders"
+     where "folderId" = $1;
+  `;
+
+  const params = [folderId];
+  db.query(sql, params)
+    .then(result => {
+      const folder = result.rows[0];
+      if (!folder) {
+        res.status(404).json({
+          error: `Cannot find grade with "folderId" ${folderId}`
+        });
+      } else {
+        res.json(folder);
+      }
     })
     .catch(err => {
       console.error(err);

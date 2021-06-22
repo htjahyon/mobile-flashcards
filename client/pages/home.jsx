@@ -19,6 +19,8 @@ export default class Home extends React.Component {
     this.folders = null;
     this.batches = null;
     this.maxFolders = 5;
+    this.maxBatches = 6;
+    this.createNew = null;
     this.state = {
       folders: [],
       batches: [],
@@ -46,8 +48,8 @@ export default class Home extends React.Component {
       .catch(err => console.error('Fetch folders failed!', err));
   }
 
-  displayCards(batchId) {
-    fetch('/api/folderCards')
+  displayCards(folderId) {
+    fetch(`/api/batches/${folderId}`)
       .then(res => res.json())
       .then(data => {
         this.setState({
@@ -60,7 +62,7 @@ export default class Home extends React.Component {
   addNewFolder() {
     if (this.folders.length >= this.maxFolders) return;
     const folder = {
-      folderName: 'Untitled',
+      folderName: 'Folder ' + this.folders.length,
       userId: 1
     };
     const req = {
@@ -79,7 +81,9 @@ export default class Home extends React.Component {
 
   clickFolder(folderId) {
     this.setState({ openedId: folderId });
-    this.displayCards(1);
+    this.displayCards(folderId);
+    this.createNew = <img className="create-new-flashcards"
+      onClick={() => this.props.setActiveFolder(this.state.openedId)}></img>;
   }
 
   render() {
@@ -91,8 +95,8 @@ export default class Home extends React.Component {
       </div>
     ));
     this.batches = this.state.batches.map(batch => (
-      <div className="folder" key={batch.folderCardId}>
-        <img className="batch" />
+      <div className="folder" key={batch.batchId}>
+       <a href="#edit-cards"><div className="batch" onClick={() => this.props.setActiveBatch(batch)}></div></a>
         <span className="title">{batch.cardsTitle}</span>
       </div>
     ));
@@ -115,7 +119,7 @@ export default class Home extends React.Component {
         <h2>My Flashcards</h2>
         <div className="workspace">
           {this.batches}
-          <a href="#create-new"><img className="create-new-flashcards" ></img></a>
+          <a href="#create-new">{this.createNew}</a>
         </div>
       </div>
     );

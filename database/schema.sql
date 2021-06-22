@@ -18,17 +18,17 @@ CREATE TABLE "folders" (
 ) WITH (
   OIDS=FALSE
 );
-CREATE TABLE "folderCards" (
-    "folderCardId"  serial NOT NULL,
+CREATE TABLE "batches" (
+    "batchId"  serial NOT NULL,
     "folderId"      integer NOT NULL,
     "cardsTitle"     text NOT NULL,
-    CONSTRAINT "folderCards_pk" PRIMARY KEY ("folderCardId")
+    CONSTRAINT "batches_pk" PRIMARY KEY ("batchId")
 ) WITH (
   OIDS=FALSE
 );
 CREATE TABLE "cards" (
     "cardId"    serial NOT NULL,
-    "folderCardId"  integer NOT NULL,
+    "batchId"  integer NOT NULL,
     "question"  text NOT NULL,
     "answer"    text NOT NULL,
     CONSTRAINT "cards_pk" PRIMARY KEY ("cardId")
@@ -36,5 +36,5 @@ CREATE TABLE "cards" (
   OIDS=FALSE
 );
 ALTER TABLE "folders" ADD CONSTRAINT "folders_fk0" FOREIGN KEY ("userId") REFERENCES "users"("userId");
-ALTER TABLE "folderCards" ADD CONSTRAINT "folderCards_fk0" FOREIGN KEY ("folderId") REFERENCES "folders"("folderId");
+ALTER TABLE "batches" ADD CONSTRAINT "batches_fk0" FOREIGN KEY ("folderId") REFERENCES "folders"("folderId");
 ALTER TABLE "cards" ADD CONSTRAINT "cards_fk0" FOREIGN KEY ("cardId") REFERENCES "cards"("cardId");

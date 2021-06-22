@@ -5,6 +5,7 @@ import decodeToken from './decode-token';
 import Auth from './pages/auth';
 import Home from './pages/home';
 import CreateNew from './pages/create-new';
+import EditCards from './pages/edit-cards';
 import Scores from './pages/scores';
 import NotFound from './pages/not-found';
 import PageContainer from './pages/page-container';
@@ -15,10 +16,14 @@ export default class App extends React.Component {
     this.state = {
       user: null,
       isAuthorizing: true,
-      route: parseRoute(window.location.hash)
+      route: parseRoute(window.location.hash),
+      activeBatch: null,
+      activeFolder: null
     };
     this.handleSignIn = this.handleSignIn.bind(this);
     this.handleSignOut = this.handleSignOut.bind(this);
+    this.setActiveBatch = this.setActiveBatch.bind(this);
+    this.setActiveFolder = this.setActiveFolder.bind(this);
   }
 
   componentDidMount() {
@@ -43,16 +48,27 @@ export default class App extends React.Component {
     this.setState({ user: null });
   }
 
+  setActiveBatch(batch) {
+    this.setState({ activeBatch: batch });
+  }
+
+  setActiveFolder(folderId) {
+    this.setState({ activeFolder: folderId });
+  }
+
   renderPage() {
     const { path } = this.state.route;
     if (path === '') {
-      return <Home />;
+      return <Home setActiveBatch={this.setActiveBatch} setActiveFolder={this.setActiveFolder} />;
     }
     if (path === 'sign-in' || path === 'sign-up') {
       return <Auth />;
     }
     if (path === 'create-new') {
-      return <CreateNew />;
+      return <CreateNew folderId={this.state.activeFolder}/>;
+    }
+    if (path === 'edit-cards') {
+      return <EditCards batch={this.state.activeBatch} />;
     }
     if (path === 'scores') {
       return <Scores />;
