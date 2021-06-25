@@ -21,6 +21,7 @@ export default class Home extends React.Component {
     this.maxFolders = 5;
     this.maxBatches = 6;
     this.createNew = null;
+    this.trash = null;
     this.state = {
       folders: [],
       batches: [],
@@ -31,6 +32,8 @@ export default class Home extends React.Component {
     this.displayCards = this.displayCards.bind(this);
     this.addNewFolder = this.addNewFolder.bind(this);
     this.clickFolder = this.clickFolder.bind(this);
+    this.recentBatch = this.recentBatch.bind(this);
+    this.trashFolder = this.trashFolder.bind(this);
   }
 
   componentDidMount() {
@@ -61,8 +64,9 @@ export default class Home extends React.Component {
 
   addNewFolder() {
     if (this.folders.length >= this.maxFolders) return;
+    const count = this.folders.length + 1;
     const folder = {
-      folderName: 'Folder ' + this.folders.length,
+      folderName: 'Folder ' + count,
       userId: 1
     };
     const req = {
@@ -84,6 +88,67 @@ export default class Home extends React.Component {
     this.displayCards(folderId);
     this.createNew = <img className="create-new-flashcards"
       onClick={() => this.props.setActiveFolder(this.state.openedId)}></img>;
+    this.trash = <img className="trash" onClick={() => this.trashFolder(this.state.openedId)}></img>;
+  }
+
+  recentBatch() {
+    let batch = null;
+    fetch('/api/batches/')
+      .then(res => res.json())
+      .then(result => {
+        let biggest; let bigIndex = 0;
+        for (let i = 0; i < result.length; i++) {
+          if (result[i].batchId > biggest) {
+            biggest = result[i].batchId;
+            bigIndex = i;
+          }
+        }
+        batch = result[bigIndex];
+      })
+      .catch(error => console.error('recentBatch failed!', error));
+    this.props.setActiveBatch(batch);
+  }
+
+  trashFolder(folderId) {
+    const req = {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    };
+    fetch(`api/folders/${folderId}`, req)
+      .then(res => res.json())
+      .then(result => {})
+      .catch(error => console.error('Delete folder error!', error));
+    const batchIdArray = [];
+    for (let i = 0; i < this.state.batches.length; i++) {
+      batchIdArray.push(this.state.batches[i].batchId);
+      fetch(`api/batches/${this.state.batches[i].batchId}`, req)
+        .then(res => res.json())
+        .then(result => {})
+        .catch(error => console.error('Delete batches error!', error));
+    }
+    for (let b = 0; b < batchIdArray.length; b++) {
+      fetch(`api/cards/${batchIdArray[b]}`)
+        .then(res => res.json())
+        .then(result => {
+          for (let c = 0; c < result.length; c++) {
+            fetch(`api/cards/${result[c].cardId}`, req)
+              .then(res1 => res1.json())
+              .then(result1 => {})
+              .catch(error1 => console.error('Delete cards error!', error1));
+
+          }
+        })
+        .catch(error => console.error('Add batchId array error!', error));
+    }
+  }
+
+  componentWillUnmount() {
+    this.setState({
+      folders: null,
+      batches: null
+    });
   }
 
   render() {
@@ -107,7 +172,7 @@ export default class Home extends React.Component {
       <div style={style.container}>
         <div style={style.icons}>
           <a href="#scores"><img className="scores"></img></a>
-          <img className="recently-made"></img>
+          <a href="#edit-cards"><img className="recently-made" onClick={this.recentBatch}></img></a>
           <img className="share"></img>
           <img className="logout" onClick={handleSignOut}></img>
         </div>
@@ -115,6 +180,7 @@ export default class Home extends React.Component {
         <div className="folders">
           {this.folders}
           <img className="add-new-folder" onClick={this.addNewFolder}></img>
+          {this.trash}
         </div>
         <h2>My Flashcards</h2>
         <div className="workspace">

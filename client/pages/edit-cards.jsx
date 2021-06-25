@@ -280,6 +280,7 @@ export default class EditCards extends React.Component {
             <img className="delete" onClick={() => this.deleteCard(this.index)}></img>
             <img className="question-answer" onClick={this.flipCard}></img>
             <img className="add" onClick={this.addCard}></img>
+            <img className="self-assessment"></img>
           </div>
         </div>;
     }

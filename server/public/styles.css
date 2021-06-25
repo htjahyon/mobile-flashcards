@@ -187,3 +187,11 @@ h2 {
   background-repeat: no-repeat;
   background-image: url(./images/scores-results.png);
 }
+
+.trash {
+  width: 15%;
+  height: 90px;
+  background-repeat: no-repeat;
+  background-image: url(./images/trash.png);
+  cursor: pointer;
+}
