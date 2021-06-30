@@ -212,7 +212,7 @@ app.delete('/api/cards/:cardId', (req, res) => {
           error: `Cannot find card with "cardId" ${cardId}`
         });
       } else {
-        res.status(204).json(card);
+        res.json(card);
       }
     })
     .catch(err => {
@@ -359,7 +359,7 @@ app.delete('/api/batches/:batchId', (req, res) => {
           error: `Cannot find card with "batchId" ${batchId}`
         });
       } else {
-        res.status(204).json(batches);
+        res.json(batches);
       }
     })
     .catch(err => {
@@ -506,7 +506,7 @@ app.delete('/api/folders/:folderId', (req, res) => {
           error: `Cannot find folder with "folderId" ${folderId}`
         });
       } else {
-        res.status(204).json(folder);
+        res.json(folder);
       }
     })
     .catch(err => {

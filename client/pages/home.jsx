@@ -86,9 +86,12 @@ export default class Home extends React.Component {
   clickFolder(folderId) {
     this.setState({ openedId: folderId });
     this.displayCards(folderId);
-    this.createNew = <img className="create-new-flashcards"
-      onClick={() => this.props.setActiveFolder(this.state.openedId)}></img>;
-    this.trash = <img className="trash" onClick={() => this.trashFolder(this.state.openedId)}></img>;
+    this.createNew = this.state.folders.length > 0
+      ? <img className="create-new-flashcards" onClick={() => this.props.setActiveFolder(this.state.openedId)}></img>
+      : null;
+    this.trash = this.state.folders.length > 0
+      ? <img className="trash" onClick={() => this.trashFolder(this.state.openedId)}></img>
+      : null;
   }
 
   recentBatch() {
@@ -142,6 +145,7 @@ export default class Home extends React.Component {
         })
         .catch(error => console.error('Add batchId array error!', error));
     }
+    this.displayFolders();
   }
 
   componentWillUnmount() {

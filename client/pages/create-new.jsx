@@ -25,6 +25,8 @@ export default class CreateNew extends React.Component {
     this.title = 'Untitled';
     this.folderId = this.props.folderId;
     this.batchId = null;
+    this.start = false;
+    this.display = null;
     this.state =
     {
       title: 'Untitled',
@@ -56,28 +58,30 @@ export default class CreateNew extends React.Component {
       body: JSON.stringify(batch)
     };
     fetch('/api/batches', req)
-      .then(res => res.json())
-      .then(result => {
-        this.batchId = result.batchId;
+      .then(res1 => res1.json())
+      .then(result1 => {
+        const card = {
+          batchId: result1.batchId,
+          question: 'Add question.',
+          answer: 'Add answer.'
+        };
+        this.batchId = result1.batchId;
+        req = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(card)
+        };
+        fetch('/api/cards', req)
+          .then(res2 => res2.json())
+          .then(result2 => {
+            this.flashcards.push(result2);
+          })
+          .catch(error2 => console.error('Post error!', error2));
       })
-      .catch(error => console.error('Post batches error!', error));
-    req = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        batchId: this.batchId,
-        question: 'Add question.',
-        answer: 'Add answer.'
-      })
-    };
-    fetch('/api/cards', req)
-      .then(res => res.json())
-      .then(result => {
-        this.flashcards.push(result);
-      })
-      .catch(error => console.error('Post error!', error));
+      .catch(error1 => console.error('Post batches error!', error1));
+
   }
 
   onChangeTitle(event) {
@@ -95,12 +99,17 @@ export default class CreateNew extends React.Component {
       this.flashcards[index].answer = this.state.content;
     }
     const cardNum = this.flashcards[index].cardId;
+    const card = {
+      batchId: this.flashcards[index].batchId,
+      question: this.flashcards[index].question,
+      answer: this.flashcards[index].answer
+    };
     const req = {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(this.flashcards[index])
+      body: JSON.stringify(card)
     };
     fetch(`/api/cards/${cardNum}`, req)
       .then(res => res.json())
@@ -196,12 +205,8 @@ export default class CreateNew extends React.Component {
           this.flashcards.splice(index, 1);
           fetch(`/api/cards/${cardNum}`, req);
         } else {
-          this.flashcards[this.index] =
-        {
-          batchId: this.batchId,
-          question: 'Add question.',
-          answer: 'Add answer.'
-        };
+          this.flashcards.splice(index, 1);
+          fetch(`/api/cards/${cardNum}`, req);
           this.componentDidMount();
         }
         this.setState({ content: this.flashcards[this.index].question });
@@ -220,6 +225,7 @@ export default class CreateNew extends React.Component {
   }
 
   addCard() {
+    this.start = true;
     this.saveCard(this.index);
     this.index = this.flashcards.length;
     this.question = true;
@@ -239,24 +245,28 @@ export default class CreateNew extends React.Component {
       .then(res => res.json())
       .then(result => {
         this.flashcards.push(result);
+        this.setState({ content: result.question });
       })
       .catch(error => console.error('Post error!', error));
-    this.setState({ content: this.flashcards[this.index].question });
+
   }
 
   render() {
     const sideText = this.question === true
       ? 'Question'
       : 'Answer';
-    let display =
+    const length = this.start === true ? this.flashcards.length : 1;
+    if (this.isDeletedAll) {
+      return (
         <div style={style.container}>
           <h1 className="track-cards">Flashcards Deleted!</h1>
           <img className="trash-can track-cards"></img>
           <a href="#" className="track-cards">Go Home</a>
-        </div>;
-    if (!this.isDeletedAll) {
-      display =
-        <div style={style.container}>
+        </div>
+      );
+    }
+    return (
+      <div style={style.container}>
         <div style={style.icons}>
           <a href="#"><img className="home-icon"></img></a>
           <form className="w-100 create-title">
@@ -275,7 +285,7 @@ export default class CreateNew extends React.Component {
           <img className="save-all" onClick={this.saveAll}></img>
           <img className="delete-all" onClick={this.deleteAll}></img>
         </div>
-        <h2 className="track-cards">{this.index + 1}/{this.flashcards.length}</h2>
+        <h2 className="track-cards">{this.index + 1}/{length}</h2>
         <div className="space">
           <img className="previous" onClick={this.previousClick} />
           <form className="w-100">
@@ -299,10 +309,8 @@ export default class CreateNew extends React.Component {
           <img className="question-answer" onClick={this.flipCard}></img>
           <img className="add" onClick={this.addCard}></img>
         </div>
-      </div>;
-    }
-
-    return (display);
+      </div>
+    );
   }
 }
 CreateNew.contextType = AppContext;
