@@ -9,6 +9,7 @@ import EditCards from './pages/edit-cards';
 import Scores from './pages/scores';
 import NotFound from './pages/not-found';
 import PageContainer from './pages/page-container';
+import SelfAssessment from './pages/self-assessment';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -68,11 +69,15 @@ export default class App extends React.Component {
       return <CreateNew folderId={this.state.activeFolder}/>;
     }
     if (path === 'edit-cards') {
-      return <EditCards batch={this.state.activeBatch} />;
+      return <EditCards batch={this.state.activeBatch} setActiveBatch={this.setActiveBatch}/>;
     }
     if (path === 'scores') {
       return <Scores />;
     }
+    if (path === 'self-assessment') {
+      return <SelfAssessment batch={this.state.activeBatch}/>;
+    }
+
     return <NotFound />;
   }
 

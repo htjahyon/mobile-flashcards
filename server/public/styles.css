@@ -20,7 +20,8 @@ img {
 .delete-all,
 .delete,
 .question-answer,
-.add {
+.add,
+.self-assessment {
   width: 25%;
   height: 100px;
   background-repeat: no-repeat;
@@ -95,7 +96,7 @@ h2 {
 }
 
 .create-title {
-  margin-left: 25%;
+  text-align: center;
 }
 
 .workspace {
@@ -117,6 +118,12 @@ h2 {
 
 .home-icon {
   background-image: url(./images/home-icon.png);
+}
+
+.self-assessment {
+  width: 100px;
+  height: 130px;
+  background-image: url(./images/self-assessment.png);
 }
 
 .flashcards-title {
@@ -194,4 +201,48 @@ h2 {
   background-repeat: no-repeat;
   background-image: url(./images/trash.png);
   cursor: pointer;
+}
+
+.edit {
+  width: 100px;
+  height: 100px;
+  background-repeat: no-repeat;
+  background-image: url(./images/edit.png);
+  cursor: pointer;
+}
+
+.area {
+  width: 90%;
+  height: 100px;
+  border-style: solid;
+}
+
+.wrong {
+  width: 15%;
+  height: 100px;
+  background-repeat: no-repeat;
+  background-image: url(./images/wrong.png);
+  cursor: pointer;
+}
+
+.correct {
+  width: 15%;
+  height: 100px;
+  background-repeat: no-repeat;
+  background-image: url(./images/correct.png);
+  cursor: pointer;
+}
+
+.scores2 {
+  width: 100px;
+  height: 100px;
+  background-repeat: no-repeat;
+  background-image: url(./images/scores.png);
+}
+
+.stats {
+  width: 160px;
+  height: 100px;
+  display: flex;
+  flex-direction: column;
 }

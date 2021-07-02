@@ -252,6 +252,7 @@ export default class EditCards extends React.Component {
       <div style={style.container}>
         <div style={style.icons}>
           <a href="#"><img className="home-icon"></img></a>
+          <a href="#self-assessment"><img className="self-assessment" onClick={() => this.props.setActiveBatch(this.batch)}></img></a>
           <form className="w-100 create-title">
             <div className="mb-3">
               <input
@@ -291,6 +292,7 @@ export default class EditCards extends React.Component {
           <img className="delete" onClick={() => this.deleteCard(this.index)}></img>
           <img className="question-answer" onClick={this.flipCard}></img>
           <img className="add" onClick={this.addCard}></img>
+
         </div>
       </div>
     );
