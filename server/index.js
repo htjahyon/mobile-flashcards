@@ -517,6 +517,41 @@ app.delete('/api/folders/:folderId', (req, res) => {
     });
 });
 
+app.get('/api/scores', (req, res, next) => {
+  const sql = `select *
+                from "scores";
+              `;
+  db.query(sql)
+    .then(result => {
+      res.status(200).json(result.rows);
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({
+        error: 'An unexpected error occurred.'
+      });
+    });
+});
+
+app.post('/api/scores', (req, res, next) => {
+  const { folderName, batchName, correct, total } = req.body;
+  if (!folderName || !batchName || !correct || !total) {
+    throw new ClientError(400, 'folderName, batchName, correct, and total are required fields.');
+  }
+  const sql = `
+    insert into "scores" ("folderName", "batchName", "correct", "total")
+    values ($1, $2, $3, $4)
+    returning *
+  `;
+  const params = [folderName, batchName, correct, total];
+  db.query(sql, params)
+    .then(result => {
+      const [score] = result.rows;
+      res.status(201).json(score);
+    })
+    .catch(err => next(err));
+});
+
 app.listen(process.env.PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`express server listening on port ${process.env.PORT}`);

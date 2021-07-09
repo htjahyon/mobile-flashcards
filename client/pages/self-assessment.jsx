@@ -39,6 +39,7 @@ export default class SelfAssessment extends React.Component {
     this.wrong = this.wrong.bind(this);
     this.flipCard = this.flipCard.bind(this);
     this.correct = this.correct.bind(this);
+    this.postResult = this.postResult.bind(this);
   }
 
   componentDidMount() {
@@ -120,6 +121,32 @@ export default class SelfAssessment extends React.Component {
     });
   }
 
+  postResult() {
+    const folderId = this.batch.folderId;
+    fetch(`/api/folders/${folderId}`)
+      .then(res => res.json())
+      .then(result => {
+        const score = {
+          folderName: result.folderName,
+          batchName: this.batch.cardsTitle,
+          correct: this.good,
+          total: this.flashcards.length
+        };
+        const req = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(score)
+        };
+        fetch('/api/scores', req)
+          .then(res2 => res2.json())
+          .then(result2 => {})
+          .catch(error2 => console.error('postResult error', error2));
+      })
+      .catch(error => console.error('Get folder error!', error));
+  }
+
   render() {
     const sideText = this.question === true
       ? 'Question'
@@ -127,8 +154,8 @@ export default class SelfAssessment extends React.Component {
     return (
       <div style={style.container}>
         <div style={style.icons}>
-          <a href="#"><img className="home-icon"></img></a>
-          <a href="#scores"><img className="scores2"></img></a>
+          <a href="#" onClick={this.postResult}><img className="home-icon"></img></a>
+          <a href="#scores" onClick={this.postResult}><img className="scores2"></img></a>
           <h1 className="w-100 create-title">{this.title}</h1>
           <div className="stats">
             <span style={{ color: 'green' }}>Correct: {this.good}</span>

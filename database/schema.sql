@@ -35,6 +35,18 @@ CREATE TABLE "cards" (
 ) WITH (
   OIDS=FALSE
 );
+CREATE TABLE "scores" (
+  "scoreId"  serial NOT NULL,
+  "folderName" text NOT NULL,
+  "batchName" text NOT NULL,
+  "correct" integer NOT NULL,
+  "total" integer NOT NULL,
+  CONSTRAINT "scores_pk" PRIMARY KEY ("scoreId")
+) WITH (
+  OIDS=FALSE
+);
+
 ALTER TABLE "folders" ADD CONSTRAINT "folders_fk0" FOREIGN KEY ("userId") REFERENCES "users"("userId");
 ALTER TABLE "batches" ADD CONSTRAINT "batches_fk0" FOREIGN KEY ("folderId") REFERENCES "folders"("folderId");
 ALTER TABLE "cards" ADD CONSTRAINT "cards_fk0" FOREIGN KEY ("cardId") REFERENCES "cards"("cardId");
+ALTER TABLE "scores" ADD CONSTRAINT "scores_fk0" FOREIGN KEY ("scoreId") REFERENCES "scores"("scoreId");

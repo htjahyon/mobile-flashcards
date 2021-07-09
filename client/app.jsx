@@ -72,10 +72,10 @@ export default class App extends React.Component {
       return <EditCards batch={this.state.activeBatch} setActiveBatch={this.setActiveBatch}/>;
     }
     if (path === 'scores') {
-      return <Scores />;
+      return <Scores batch={this.state.activeBatch}/>;
     }
     if (path === 'self-assessment') {
-      return <SelfAssessment batch={this.state.activeBatch}/>;
+      return <SelfAssessment />;
     }
 
     return <NotFound />;
