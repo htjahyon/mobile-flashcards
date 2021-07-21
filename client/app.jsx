@@ -10,6 +10,7 @@ import Scores from './pages/scores';
 import NotFound from './pages/not-found';
 import PageContainer from './pages/page-container';
 import SelfAssessment from './pages/self-assessment';
+import Share from './pages/share';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -19,12 +20,14 @@ export default class App extends React.Component {
       isAuthorizing: true,
       route: parseRoute(window.location.hash),
       activeBatch: null,
-      activeFolder: null
+      activeFolder: null,
+      activeUser: null
     };
     this.handleSignIn = this.handleSignIn.bind(this);
     this.handleSignOut = this.handleSignOut.bind(this);
     this.setActiveBatch = this.setActiveBatch.bind(this);
     this.setActiveFolder = this.setActiveFolder.bind(this);
+    this.setActiveUser = this.setActiveUser.bind(this);
   }
 
   componentDidMount() {
@@ -57,13 +60,18 @@ export default class App extends React.Component {
     this.setState({ activeFolder: folderId });
   }
 
+  setActiveUser(userId) {
+    this.setState({ activeUser: userId });
+  }
+
   renderPage() {
     const { path } = this.state.route;
     if (path === '') {
-      return <Home setActiveBatch={this.setActiveBatch} setActiveFolder={this.setActiveFolder} />;
+      return <Home setActiveBatch={this.setActiveBatch} setActiveFolder={this.setActiveFolder}
+       setActiveUser = {this.setActiveUser} user={this.state.activeUser}/>;
     }
     if (path === 'sign-in' || path === 'sign-up') {
-      return <Auth />;
+      return <Auth setActiveUser={this.setActiveUser}/>;
     }
     if (path === 'create-new') {
       return <CreateNew folderId={this.state.activeFolder}/>;
@@ -75,9 +83,11 @@ export default class App extends React.Component {
       return <Scores batch={this.state.activeBatch}/>;
     }
     if (path === 'self-assessment') {
-      return <SelfAssessment />;
+      return <SelfAssessment batch={this.state.activeBatch} setActiveBatch={this.setActiveBatch}/>;
     }
-
+    if (path === 'share') {
+      return <Share userId={this.state.activeUser}/>;
+    }
     return <NotFound />;
   }
 

@@ -3,6 +3,7 @@ import React from 'react';
 export default class AuthForm extends React.Component {
   constructor(props) {
     super(props);
+    this.userId = null;
     this.state = {
       username: '',
       password: ''
@@ -33,6 +34,7 @@ export default class AuthForm extends React.Component {
           window.location.hash = 'sign-in';
         } else if (result.user && result.token) {
           this.props.onSignIn(result);
+          this.props.setActiveUser(result.userId);
         }
       });
   }

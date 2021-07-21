@@ -22,6 +22,8 @@ export default class Home extends React.Component {
     this.maxBatches = 6;
     this.createNew = null;
     this.trash = null;
+    this.recent = null;
+    this.userId = this.props.userId;
     this.state = {
       folders: [],
       batches: [],
@@ -38,6 +40,7 @@ export default class Home extends React.Component {
 
   componentDidMount() {
     this.displayFolders();
+    this.recentBatch();
   }
 
   displayFolders() {
@@ -67,7 +70,7 @@ export default class Home extends React.Component {
     const count = this.folders.length + 1;
     const folder = {
       folderName: 'Folder ' + count,
-      userId: 1
+      userId: this.userId
     };
     const req = {
       method: 'POST',
@@ -95,21 +98,20 @@ export default class Home extends React.Component {
   }
 
   recentBatch() {
-    let batch = null;
     fetch('/api/batches/')
       .then(res => res.json())
       .then(result => {
-        let biggest; let bigIndex = 0;
+        let biggest = 0; let bigIndex = 0;
         for (let i = 0; i < result.length; i++) {
           if (result[i].batchId > biggest) {
             biggest = result[i].batchId;
             bigIndex = i;
           }
         }
-        batch = result[bigIndex];
+        this.recent = result[bigIndex];
       })
       .catch(error => console.error('recentBatch failed!', error));
-    this.props.setActiveBatch(batch);
+
   }
 
   trashFolder(folderId) {
@@ -176,8 +178,8 @@ export default class Home extends React.Component {
       <div style={style.container}>
         <div style={style.icons}>
           <a href="#scores"><img className="scores"></img></a>
-          <a href="#edit-cards"><img className="recently-made" onClick={this.recentBatch}></img></a>
-          <img className="share"></img>
+          <a href="#edit-cards"><img className="recently-made" onClick={() => this.props.setActiveBatch(this.recent)}></img></a>
+          <a href="#share"><img className="share" onClick={() => this.props.setActiveUser(this.user)}></img></a>
           <img className="logout" onClick={handleSignOut}></img>
         </div>
         <h2>My Folders</h2>

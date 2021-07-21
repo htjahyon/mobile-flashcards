@@ -24,6 +24,7 @@ export default class SelfAssessment extends React.Component {
     this.batch = this.props.batch;
     this.good = 0;
     this.bad = 0;
+    this.change = false;
     this.color = [];
     this.text = [];
     this.state =
@@ -85,6 +86,7 @@ export default class SelfAssessment extends React.Component {
   }
 
   wrong() {
+    this.change = true;
     if (this.text[this.index] === 'Wrong!') return;
     if (this.text[this.index] === 'Correct!') {
       this.good--;
@@ -108,6 +110,7 @@ export default class SelfAssessment extends React.Component {
   }
 
   correct() {
+    this.change = true;
     if (this.text[this.index] === 'Correct!') return;
     if (this.text[this.index] === 'Wrong!') {
       this.bad--;
@@ -122,6 +125,7 @@ export default class SelfAssessment extends React.Component {
   }
 
   postResult() {
+    if (!this.change) return;
     const folderId = this.batch.folderId;
     fetch(`/api/folders/${folderId}`)
       .then(res => res.json())

@@ -55,7 +55,7 @@ export default class Scores extends React.Component {
       <div style={style.container}>
         <div style={style.icons}>
           <a href="#"><img className="home-icon"></img></a>
-          <img style={{ marginLeft: '20%' }} className="track-cards scores-results"></img>
+          <img className="track-cards scores-results"></img>
         </div>
         <table className="table">
           <thead>

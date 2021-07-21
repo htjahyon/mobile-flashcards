@@ -552,6 +552,59 @@ app.post('/api/scores', (req, res, next) => {
     .catch(err => next(err));
 });
 
+app.get('/api/users', (req, res, next) => {
+  const sql = `select *
+                from "users";
+              `;
+  db.query(sql)
+    .then(result => {
+      res.status(200).json(result.rows);
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({
+        error: 'An unexpected error occurred.'
+      });
+    });
+});
+
+app.get('/api/users/:userId', (req, res, next) => {
+  const userId = parseInt(req.params.userId, 10);
+  if (!Number.isInteger(userId) || userId <= 0) {
+    res.status(400).json({
+      error: '"userId" must be a positive integer'
+    });
+    return;
+  }
+  const sql = `select *
+                from "users";
+              `;
+
+  db.query(sql)
+    .then(result => {
+      let found = false;
+      for (let i = 0; i < result.rows.length; i++) {
+        if (result.rows[i].userId === userId) {
+          result.rows.splice(i, 1);
+          found = true;
+        }
+      }
+      if (!found) {
+        res.status(404).json({
+          error: `Cannot find user with "userId" ${userId}`
+        });
+      } else {
+        res.status(200).json(result.rows);
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({
+        error: 'An unexpected error occurred.'
+      });
+    });
+});
+
 app.listen(process.env.PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`express server listening on port ${process.env.PORT}`);
