@@ -21,7 +21,8 @@ export default class EditCards extends React.Component {
     this.index = 0;
     this.question = true;
     this.isDeletedAll = false;
-    this.title = this.props.batch.cardsTitle;
+    this.userId = this.props.userId;
+    this.title = this.props.batch.batchName;
     this.batch = this.props.batch;
     this.state =
     {
@@ -109,9 +110,10 @@ export default class EditCards extends React.Component {
     this.title = this.state.title;
     this.saveCard(this.index);
     const batch = {
+      userId: this.userId,
       folderId: this.batch.folderId,
       batchId: this.batch.batchId,
-      cardsTitle: this.title
+      batchName: this.title
     };
     const req = {
       method: 'PATCH',
@@ -143,6 +145,13 @@ export default class EditCards extends React.Component {
         .then(res => res.json())
         .then(result => { })
         .catch(error => console.error('Delete cards error!', error));
+    }
+    const shareId = this.props.batch.shareId;
+    if (typeof shareId !== 'undefined') {
+      fetch(`/api/share/${shareId}`, req)
+        .then(res => res.json())
+        .then(result => { })
+        .catch(error => console.error('Delete shareId failed!', error));
     }
     this.isDeletedAll = true;
   }

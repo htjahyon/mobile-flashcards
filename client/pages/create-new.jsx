@@ -22,6 +22,7 @@ export default class CreateNew extends React.Component {
     this.priorLength = 1;
     this.question = true;
     this.isDeletedAll = false;
+    this.userId = this.props.userId;
     this.title = 'Untitled';
     this.folderId = this.props.folderId;
     this.batchId = null;
@@ -47,8 +48,9 @@ export default class CreateNew extends React.Component {
   componentDidMount() {
     this.title = this.state.title;
     const batch = {
+      userId: this.userId,
       folderId: this.folderId,
-      cardsTitle: this.title
+      batchName: this.title
     };
     let req = {
       method: 'POST',
@@ -122,8 +124,9 @@ export default class CreateNew extends React.Component {
     this.title = this.state.title;
     this.saveCard(this.index);
     const batch = {
+      userId: this.userId,
       folderId: this.folderId,
-      cardsTitle: this.title
+      batchName: this.title
     };
     const req = {
       method: 'PATCH',

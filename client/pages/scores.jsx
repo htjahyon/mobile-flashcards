@@ -16,13 +16,14 @@ export default class Scores extends React.Component {
   constructor(props) {
     super(props);
     this.testResults = null;
+    this.userId = this.props.userId;
     this.state = {
       testResults: []
     };
   }
 
   componentDidMount() {
-    fetch('/api/scores')
+    fetch(`/api/scores/${this.userId}`)
       .then(res => res.json())
       .then(result => {
         this.setState({ testResults: result });

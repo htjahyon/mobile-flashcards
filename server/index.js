@@ -259,7 +259,7 @@ app.get('/api/batches/:folderId', (req, res, next) => {
       const batches = result.rows;
       if (!batches) {
         res.status(404).json({
-          error: `Cannot find grade with "folderId" ${folderId}`
+          error: `Cannot find batch with "folderId" ${folderId}`
         });
       } else {
         res.json(batches);
@@ -273,18 +273,53 @@ app.get('/api/batches/:folderId', (req, res, next) => {
     });
 });
 
-app.post('/api/batches', (req, res, next) => {
-  let { folderId, cardsTitle } = req.body;
-  folderId = parseInt(folderId, 10);
-  if (!folderId || !cardsTitle) {
-    throw new ClientError(400, 'folderId and cardsTitle are required fields.');
+app.get('/api/findBatch/:batchId', (req, res, next) => {
+  const batchId = parseInt(req.params.batchId, 10);
+  if (!Number.isInteger(batchId) || batchId <= 0) {
+    res.status(400).json({
+      error: '"batchId" must be a positive integer'
+    });
+    return;
   }
   const sql = `
-    insert into "batches" ("folderId", "cardsTitle")
-    values ($1, $2)
+    select *
+      from "batches"
+     where "batchId" = $1;
+  `;
+
+  const params = [batchId];
+  db.query(sql, params)
+    .then(result => {
+      const batch = result.rows[0];
+      if (!batch) {
+        res.status(404).json({
+          error: `Cannot find batch with "batchId" ${batchId}`
+        });
+      } else {
+        res.json(batch);
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({
+        error: 'An unexpected error occurred.'
+      });
+    });
+});
+
+app.post('/api/batches', (req, res, next) => {
+  let { userId, folderId, batchName } = req.body;
+  userId = parseInt(userId, 10);
+  folderId = parseInt(folderId, 10);
+  if (!userId || !folderId || !batchName) {
+    throw new ClientError(400, 'userId, folderId, and batchName are required fields.');
+  }
+  const sql = `
+    insert into "batches" ("userId", "folderId", "batchName")
+    values ($1, $2, $3)
     returning *
   `;
-  const params = [folderId, cardsTitle];
+  const params = [userId, folderId, batchName];
   db.query(sql, params)
     .then(result => {
       const [cards] = result.rows;
@@ -301,23 +336,23 @@ app.patch('/api/batches/:batchId', (req, res) => {
     });
     return;
   }
-  let { folderId, cardsTitle } = req.body;
+  let { folderId, batchName } = req.body;
   folderId = parseInt(folderId, 10);
-  if (!Number.isInteger(folderId) || folderId <= 0 || typeof cardsTitle === 'undefined') {
+  if (!Number.isInteger(folderId) || folderId <= 0 || typeof batchName === 'undefined') {
     res.status(400).json({
-      error: 'folderId and cardsTitle are required fields.'
+      error: 'folderId and batchName are required fields.'
     });
     return;
   }
 
   const sql = `update "batches"
              set "folderId" = $2,
-                 "cardsTitle" = $3
+                 "batchName" = $3
              where "batchId" = $1
              returning *;
              `;
 
-  const params = [batchId, folderId, cardsTitle];
+  const params = [batchId, folderId, batchName];
   db.query(sql, params)
     .then(result => {
       const batch = result.rows[0];
@@ -370,13 +405,31 @@ app.delete('/api/batches/:batchId', (req, res) => {
     });
 });
 
-app.get('/api/folders', (req, res) => {
-  const sql = `select *
-                from "folders";
-              `;
-  db.query(sql)
+app.get('/api/userFolders/:userId', (req, res) => {
+  const userId = parseInt(req.params.userId, 10);
+  if (userId <= 0) {
+    res.status(400).json({
+      error: '"userId" must be a positive integer'
+    });
+    return;
+  }
+  const sql = `
+    select *
+      from "folders"
+     where "userId" = $1;
+  `;
+
+  const params = [userId];
+  db.query(sql, params)
     .then(result => {
-      res.status(200).json(result.rows);
+      const folders = result.rows;
+      if (!folders) {
+        res.status(404).json({
+          error: `Cannot find folders with userId ${userId}`
+        });
+      } else {
+        res.json(folders);
+      }
     })
     .catch(err => {
       console.error(err);
@@ -517,13 +570,31 @@ app.delete('/api/folders/:folderId', (req, res) => {
     });
 });
 
-app.get('/api/scores', (req, res, next) => {
-  const sql = `select *
-                from "scores";
-              `;
-  db.query(sql)
+app.get('/api/scores/:userId', (req, res, next) => {
+  const userId = parseInt(req.params.userId, 10);
+  if (!Number.isInteger(userId) || userId <= 0) {
+    res.status(400).json({
+      error: '"userId" must be a positive integer'
+    });
+    return;
+  }
+  const sql = `
+    select *
+      from "scores"
+     where "userId" = $1;
+  `;
+
+  const params = [userId];
+  db.query(sql, params)
     .then(result => {
-      res.status(200).json(result.rows);
+      const scores = result.rows;
+      if (!scores) {
+        res.status(404).json({
+          error: `Cannot find scores with "userId" ${userId}`
+        });
+      } else {
+        res.json(scores);
+      }
     })
     .catch(err => {
       console.error(err);
@@ -534,16 +605,16 @@ app.get('/api/scores', (req, res, next) => {
 });
 
 app.post('/api/scores', (req, res, next) => {
-  const { folderName, batchName, correct, total } = req.body;
-  if (!folderName || !batchName || !correct || !total) {
-    throw new ClientError(400, 'folderName, batchName, correct, and total are required fields.');
+  const { userId, folderName, batchName, correct, total } = req.body;
+  if (!userId || !folderName || !batchName || !total) {
+    throw new ClientError(400, 'userId, folderName, batchName, and total are required fields.');
   }
   const sql = `
-    insert into "scores" ("folderName", "batchName", "correct", "total")
-    values ($1, $2, $3, $4)
+    insert into "scores" ("userId", "folderName", "batchName", "correct", "total")
+    values ($1, $2, $3, $4, $5)
     returning *
   `;
-  const params = [folderName, batchName, correct, total];
+  const params = [userId, folderName, batchName, correct, total];
   db.query(sql, params)
     .then(result => {
       const [score] = result.rows;
@@ -595,6 +666,167 @@ app.get('/api/users/:userId', (req, res, next) => {
         });
       } else {
         res.status(200).json(result.rows);
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({
+        error: 'An unexpected error occurred.'
+      });
+    });
+});
+
+app.get('/api/send/:sendUserId/:receiveUserId', (req, res, next) => {
+  const sendUserId = parseInt(req.params.sendUserId, 10);
+  const receiveUserId = parseInt(req.params.receiveUserId, 10);
+  if (!Number.isInteger(sendUserId) || sendUserId <= 0 || !Number.isInteger(receiveUserId) || receiveUserId <= 0) {
+    res.status(400).json({
+      error: '"sendUserId" and "receiveUserId" must be a positive integers'
+    });
+    return;
+  }
+  const sql = `
+    select *
+      from "share"
+     where "sendUserId" = $1
+     and "receiveUserId" = $2;
+  `;
+
+  const params = [sendUserId, receiveUserId];
+  db.query(sql, params)
+    .then(result => {
+      const sent = result.rows;
+      if (!sent) {
+        res.status(404).json({
+          error: `Cannot find sent with "sendUserId" ${sendUserId} or "receiveUserId" ${receiveUserId}`
+        });
+      } else {
+        res.json(sent);
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({
+        error: 'An unexpected error occurred.'
+      });
+    });
+});
+
+app.get('/api/receive/:receiveUserId/:sendUserId', (req, res, next) => {
+  const sendUserId = parseInt(req.params.sendUserId, 10);
+  const receiveUserId = parseInt(req.params.receiveUserId, 10);
+  if (!Number.isInteger(sendUserId) || sendUserId <= 0 || !Number.isInteger(receiveUserId) || receiveUserId <= 0) {
+    res.status(400).json({
+      error: '"sendUserId" and "receiveUserId" must be a positive integers'
+    });
+    return;
+  }
+  const sql = `
+    select *
+      from "share"
+     where "receiveUserId" = $1
+     and "sendUserId" = $2;
+  `;
+
+  const params = [receiveUserId, sendUserId];
+  db.query(sql, params)
+    .then(result => {
+      const received = result.rows;
+      if (!received) {
+        res.status(404).json({
+          error: `Cannot find sent with "receiveUserId" ${receiveUserId} or "sendUserId" ${sendUserId}`
+        });
+      } else {
+        res.json(received);
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({
+        error: 'An unexpected error occurred.'
+      });
+    });
+});
+
+app.get('/api/receive/:receiveUserId', (req, res, next) => {
+  const receiveUserId = parseInt(req.params.receiveUserId, 10);
+  if (!Number.isInteger(receiveUserId) || receiveUserId <= 0) {
+    res.status(400).json({
+      error: '"receiveUserId" must be a positive integer'
+    });
+    return;
+  }
+  const sql = `
+    select *
+      from "share"
+     where "receiveUserId" = $1;
+  `;
+
+  const params = [receiveUserId];
+  db.query(sql, params)
+    .then(result => {
+      const received = result.rows;
+      if (!received) {
+        res.status(404).json({
+          error: `Cannot find received with "receiveUserId" ${receiveUserId}`
+        });
+      } else {
+        res.json(received);
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({
+        error: 'An unexpected error occurred.'
+      });
+    });
+});
+
+app.post('/api/share', (req, res, next) => {
+  let { sendUserId, receiveUserId, batchId, batchName } = req.body;
+  sendUserId = parseInt(sendUserId, 10);
+  receiveUserId = parseInt(receiveUserId, 10);
+  batchId = parseInt(batchId, 10);
+  if (!sendUserId || !receiveUserId || !batchId || !batchName) {
+    throw new ClientError(400, 'sendUserId, receiveUserId, batchId, and batchName are required fields.');
+  }
+  const sql = `
+    insert into "share" ("sendUserId", "receiveUserId", "batchId", "batchName")
+    values ($1, $2, $3, $4)
+    returning *
+  `;
+  const params = [sendUserId, receiveUserId, batchId, batchName];
+  db.query(sql, params)
+    .then(result => {
+      const [share] = result.rows[0];
+      res.status(201).json(share);
+    })
+    .catch(err => next(err));
+});
+
+app.delete('/api/share/:shareId', (req, res) => {
+  const shareId = parseInt(req.params.shareId, 10);
+  if (!Number.isInteger(shareId) || shareId <= 0) {
+    res.status(400).json({
+      error: '"shareId" must be a positive integer.'
+    });
+    return;
+  }
+  const sql = `
+    delete from "share"
+     where "shareId" = $1
+     returning *;
+  `;
+  const params = [shareId];
+  db.query(sql, params)
+    .then(result => {
+      const share = result.rows[0];
+      if (!share) {
+        res.status(404).json({
+          error: `Cannot find folder with "shareId" ${shareId}`
+        });
+      } else {
+        res.json(share);
       }
     })
     .catch(err => {

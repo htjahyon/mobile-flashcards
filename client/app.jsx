@@ -66,27 +66,28 @@ export default class App extends React.Component {
 
   renderPage() {
     const { path } = this.state.route;
+    const userId = this.state.user ? this.state.user.userId : null;
     if (path === '') {
       return <Home setActiveBatch={this.setActiveBatch} setActiveFolder={this.setActiveFolder}
-       setActiveUser = {this.setActiveUser} user={this.state.activeUser}/>;
+       setActiveUser = {this.setActiveUser} userId={userId}/>;
     }
     if (path === 'sign-in' || path === 'sign-up') {
       return <Auth setActiveUser={this.setActiveUser}/>;
     }
     if (path === 'create-new') {
-      return <CreateNew folderId={this.state.activeFolder}/>;
+      return <CreateNew folderId={this.state.activeFolder} userId={userId}/>;
     }
     if (path === 'edit-cards') {
       return <EditCards batch={this.state.activeBatch} setActiveBatch={this.setActiveBatch}/>;
     }
     if (path === 'scores') {
-      return <Scores batch={this.state.activeBatch}/>;
+      return <Scores userId={userId}/>;
     }
     if (path === 'self-assessment') {
-      return <SelfAssessment batch={this.state.activeBatch} setActiveBatch={this.setActiveBatch}/>;
+      return <SelfAssessment batch={this.state.activeBatch} setActiveUser={this.setActiveUser}/>;
     }
     if (path === 'share') {
-      return <Share userId={this.state.activeUser}/>;
+      return <Share userId={userId}/>;
     }
     return <NotFound />;
   }

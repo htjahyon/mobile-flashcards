@@ -23,10 +23,13 @@ export default class Home extends React.Component {
     this.createNew = null;
     this.trash = null;
     this.recent = null;
+    this.recentArray = [];
+    this.received = null;
     this.userId = this.props.userId;
     this.state = {
       folders: [],
       batches: [],
+      received: [],
       openedId: 0
     };
 
@@ -36,15 +39,17 @@ export default class Home extends React.Component {
     this.clickFolder = this.clickFolder.bind(this);
     this.recentBatch = this.recentBatch.bind(this);
     this.trashFolder = this.trashFolder.bind(this);
+    this.getReceived = this.getReceived.bind(this);
   }
 
   componentDidMount() {
     this.displayFolders();
     this.recentBatch();
+    this.getReceived();
   }
 
   displayFolders() {
-    fetch('/api/folders')
+    fetch(`/api/userFolders/${this.userId}`)
       .then(res => res.json())
       .then(data => {
         this.setState({
@@ -81,9 +86,9 @@ export default class Home extends React.Component {
     };
     fetch('/api/folders/', req)
       .then(res => res.json())
-      .then(result => { })
+      .then(result => { this.displayFolders(); })
       .catch(error => console.error('Post folder error!', error));
-    this.displayFolders();
+
   }
 
   clickFolder(folderId) {
@@ -98,20 +103,21 @@ export default class Home extends React.Component {
   }
 
   recentBatch() {
-    fetch('/api/batches/')
+    fetch(`/api/userFolders/${this.userId}`)
       .then(res => res.json())
-      .then(result => {
-        let biggest = 0; let bigIndex = 0;
-        for (let i = 0; i < result.length; i++) {
-          if (result[i].batchId > biggest) {
-            biggest = result[i].batchId;
-            bigIndex = i;
-          }
+      .then(folders => {
+        for (let i = 0; i < folders.length; i++) {
+          fetch(`/api/batches/${folders[i].folderId}`)
+            .then(res => res.json())
+            .then(batches => {
+              for (let j = 0; j < batches.length; j++) {
+                this.recentArray.push(batches[j]);
+              }
+            })
+            .catch(err => console.error('Fetch batches failed!', err));
         }
-        this.recent = result[bigIndex];
       })
-      .catch(error => console.error('recentBatch failed!', error));
-
+      .catch(err => console.error('Fetch folders failed!', err));
   }
 
   trashFolder(folderId) {
@@ -150,6 +156,15 @@ export default class Home extends React.Component {
     this.displayFolders();
   }
 
+  getReceived() {
+    fetch(`/api/receive/${this.userId}`)
+      .then(res => res.json())
+      .then(result => {
+        this.setState({ received: result });
+      })
+      .catch(error => console.error('getNotSent failed!', error));
+  }
+
   componentWillUnmount() {
     this.setState({
       folders: null,
@@ -168,18 +183,23 @@ export default class Home extends React.Component {
     this.batches = this.state.batches.map(batch => (
       <div className="folder" key={batch.batchId}>
        <a href="#edit-cards"><div className="batch" onClick={() => this.props.setActiveBatch(batch)}></div></a>
-        <span className="title">{batch.cardsTitle}</span>
+        <span className="title">{batch.batchName}</span>
       </div>
     ));
-
+    this.received = this.state.received.map(share => (
+      <div className="folder" key={share.shareId}>
+        <a href="#edit-cards"><div className="batch" onClick={() => this.props.setActiveBatch(share)}></div></a>
+        <span className="title">{share.batchName}</span>
+      </div>
+    ));
     if (!this.context.user) return <Redirect to="sign-in" />;
     const { handleSignOut } = this.context;
     return (
       <div style={style.container}>
         <div style={style.icons}>
           <a href="#scores"><img className="scores"></img></a>
-          <a href="#edit-cards"><img className="recently-made" onClick={() => this.props.setActiveBatch(this.recent)}></img></a>
-          <a href="#share"><img className="share" onClick={() => this.props.setActiveUser(this.user)}></img></a>
+          <a href="#edit-cards"><img className="recently-made" onClick={() => this.props.setActiveBatch(this.recentArray.pop())}></img></a>
+          <a href="#share"><img className="share" onClick={() => this.props.setActiveUser(this.userId)}></img></a>
           <img className="logout" onClick={handleSignOut}></img>
         </div>
         <h2>My Folders</h2>
@@ -192,6 +212,10 @@ export default class Home extends React.Component {
         <div className="workspace">
           {this.batches}
           <a href="#create-new">{this.createNew}</a>
+        </div>
+        <h2>Flashcards From Other Users</h2>
+        <div className="workspace">
+          {this.received}
         </div>
       </div>
     );

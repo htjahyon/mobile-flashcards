@@ -20,7 +20,8 @@ export default class SelfAssessment extends React.Component {
     this.flashcards = [];
     this.index = 0;
     this.question = true;
-    this.title = this.props.batch.cardsTitle;
+    this.userId = this.props.batch.userId;
+    this.title = this.props.batch.batchName;
     this.batch = this.props.batch;
     this.good = 0;
     this.bad = 0;
@@ -127,12 +128,34 @@ export default class SelfAssessment extends React.Component {
   postResult() {
     if (!this.change) return;
     const folderId = this.batch.folderId;
+    if (typeof folderId === 'undefined') {
+      const score = {
+        userId: this.props.batch.receiveUserId,
+        folderName: 'Shared',
+        batchName: this.title,
+        correct: this.good,
+        total: this.flashcards.length
+      };
+      const req = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(score)
+      };
+      fetch('/api/scores', req)
+        .then(res2 => res2.json())
+        .then(result2 => {})
+        .catch(error2 => console.error('postResult error', error2));
+      return;
+    }
     fetch(`/api/folders/${folderId}`)
       .then(res => res.json())
       .then(result => {
         const score = {
+          userId: this.userId,
           folderName: result.folderName,
-          batchName: this.batch.cardsTitle,
+          batchName: this.title,
           correct: this.good,
           total: this.flashcards.length
         };
