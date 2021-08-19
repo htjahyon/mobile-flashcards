@@ -3,8 +3,8 @@ img {
 }
 
 .header-picture {
-  width: 100%;
-  height: 110px;
+  width: 65%;
+  height: 100px;
   background-image: url(./images/header.png);
   justify-content: center;
   background-repeat: no-repeat;
@@ -55,6 +55,7 @@ h2 {
   height: 200px;
   background-color: rgb(189, 189, 189);
   display: flex;
+  flex-wrap: wrap;
 }
 
 .batch,
@@ -88,6 +89,7 @@ h2 {
 .folder {
   display: flex;
   flex-direction: column;
+  height: 70px;
 }
 
 .title {
@@ -105,6 +107,8 @@ h2 {
   height: 400px;
   background-color: rgb(189, 189, 189);
   display: flex;
+  flex-wrap: wrap;
+  flex-basis: 400px;
 }
 
 .create-new-flashcards,
@@ -197,6 +201,14 @@ h2 {
   background-image: url(./images/scores-results.png);
 }
 
+.post {
+  width: 200px;
+  height: 100px;
+  background-repeat: no-repeat;
+  background-image: url(./images/post.png);
+  cursor: pointer;
+}
+
 .trash {
   width: 15%;
   height: 90px;
@@ -206,7 +218,7 @@ h2 {
 }
 
 .edit {
-  width: 100px;
+  width: 90px;
   height: 100px;
   background-repeat: no-repeat;
   background-image: url(./images/edit.png);
@@ -236,7 +248,7 @@ h2 {
 }
 
 .scores2 {
-  width: 100px;
+  width: 90px;
   height: 100px;
   background-repeat: no-repeat;
   background-image: url(./images/scores.png);
@@ -305,4 +317,21 @@ button {
 
 .checkbox {
   margin-left: 20px;
+}
+
+.bullets {
+  width: 100%;
+  height: 400px;
+  background-color: rgb(189, 189, 189);
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.shrug {
+  width: 25%;
+  height: 200px;
+  margin-left: 25%;
+  background-repeat: no-repeat;
+  background-image: url(./images/shrug.png);
 }

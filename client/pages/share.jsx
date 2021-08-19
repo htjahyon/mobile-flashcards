@@ -23,6 +23,8 @@ export default class Share extends React.Component {
     this.sent = null;
     this.maxUsers = 5;
     this.maxBatches = 6;
+    this.maxSent = 20;
+    this.maxReceived = 30;
     this.name = '';
     this.userId = this.props.userId;
     this.myArray = [];
@@ -101,7 +103,7 @@ export default class Share extends React.Component {
       }
     }
     for (let j = 0; j < checkedValue.length; j++) {
-      if (!this.alreadyThere(checkedValue[j])) {
+      if (!this.alreadyThere(checkedValue[j]) && j < this.maxSent) {
         const share = {
           sendUserId: this.userId,
           receiveUserId: openedId,
@@ -135,7 +137,12 @@ export default class Share extends React.Component {
     fetch(`/api/receive/${this.userId}/${userId}`)
       .then(res => res.json())
       .then(result => {
-        this.setState({ received: result });
+        const temp = [];
+        const end = result.length < this.maxReceived ? result.length : this.maxReceived;
+        for (let i = 0; i < end; i++) {
+          temp.push(result[i]);
+        }
+        this.setState({ received: temp });
       })
       .catch(error => console.error('getReceived failed!', error));
   }
@@ -191,12 +198,12 @@ export default class Share extends React.Component {
       </label>
     ));
     this.received = this.state.received.map(batch => (
-      <div className="user" key={batch.batchId}>
+      <div key={batch.batchId}>
         <li>{batch.batchName}</li>
       </div>
     ));
     this.sent = this.state.sent.map(sent => (
-      <div className="user" key={sent.batchId}>
+      <div key={sent.batchId}>
         <li>{sent.batchName}</li>
       </div>
     ));
@@ -217,11 +224,11 @@ export default class Share extends React.Component {
           {this.button}
         </div>
         <h2>Received Flashcards</h2>
-        <div className="workspace">
+        <div className="bullets">
           <form>{this.received}</form>
         </div>
         <h2>Sent Flashcards</h2>
-        <div className="workspace">
+        <div className="bullets">
           <form>{this.sent}</form>
         </div>
       </div>

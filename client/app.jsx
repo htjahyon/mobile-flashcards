@@ -84,7 +84,8 @@ export default class App extends React.Component {
       return <Scores userId={userId}/>;
     }
     if (path === 'self-assessment') {
-      return <SelfAssessment batch={this.state.activeBatch} setActiveUser={this.setActiveUser}/>;
+      return <SelfAssessment batch={this.state.activeBatch} setActiveUser={this.setActiveUser}
+        setActiveBatch={this.setActiveBatch}/>;
     }
     if (path === 'share') {
       return <Share userId={userId}/>;

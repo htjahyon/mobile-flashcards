@@ -639,6 +639,39 @@ app.get('/api/users', (req, res, next) => {
     });
 });
 
+app.delete('/api/scores/:scoreId', (req, res, next) => {
+  const scoreId = parseInt(req.params.scoreId, 10);
+  if (!Number.isInteger(scoreId) || scoreId <= 0) {
+    res.status(400).json({
+      error: '"scoreId" must be a positive integer.'
+    });
+    return;
+  }
+  const sql = `
+    delete from "scores"
+     where "scoreId" = $1
+     returning *;
+  `;
+  const params = [scoreId];
+  db.query(sql, params)
+    .then(result => {
+      const score = result.rows[0];
+      if (!score) {
+        res.status(404).json({
+          error: `Cannot find folder with "folderId" ${scoreId}`
+        });
+      } else {
+        res.json(score);
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({
+        error: 'An unexpected error occurred.'
+      });
+    });
+});
+
 app.get('/api/users/:userId', (req, res, next) => {
   const userId = parseInt(req.params.userId, 10);
   if (!Number.isInteger(userId) || userId <= 0) {

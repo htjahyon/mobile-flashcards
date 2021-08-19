@@ -42,6 +42,7 @@ export default class EditCards extends React.Component {
   }
 
   componentDidMount() {
+    if (this.batch.batchId === -1) return;
     fetch(`/api/cards/${this.batch.batchId}`)
       .then(res => res.json())
       .then(result => {
@@ -245,6 +246,15 @@ export default class EditCards extends React.Component {
   }
 
   render() {
+    if (this.batch.batchId === -1) {
+      return (
+        <div style={style.container}>
+          <h1 className="track-cards">No Recent Batch Yet!</h1>
+          <img className="track-cards shrug"></img>
+          <a href="#" className="track-cards">Go Home</a>
+        </div>
+      );
+    }
     const sideText = this.question === true
       ? 'Question'
       : 'Answer';

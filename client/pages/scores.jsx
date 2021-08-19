@@ -35,7 +35,7 @@ export default class Scores extends React.Component {
     this.testResults = this.state.testResults.map(score => {
       const percent = Math.round(score.correct / score.total * 100);
       return (
-            <tr key={score.scoreId}>
+          <tr key={score.scoreId}>
             <td>{score.folderName}</td>
             <td>{score.batchName}</td>
             <td>{score.correct}/{score.total}</td>

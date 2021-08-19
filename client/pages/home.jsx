@@ -18,13 +18,15 @@ export default class Home extends React.Component {
     super(props);
     this.folders = null;
     this.batches = null;
-    this.maxFolders = 5;
-    this.maxBatches = 6;
+    this.maxFolders = 10;
+    this.maxBatches = 18;
+    this.addFolder = null;
     this.createNew = null;
     this.trash = null;
     this.recent = null;
     this.recentArray = [];
     this.received = null;
+    this.folderClicked = false;
     this.userId = this.props.userId;
     this.state = {
       folders: [],
@@ -71,12 +73,18 @@ export default class Home extends React.Component {
   }
 
   addNewFolder() {
-    if (this.folders.length >= this.maxFolders) return;
-    const count = this.folders.length + 1;
+    if (this.state.folders.length >= this.maxFolders) return;
+    let biggest = 1;
+    for (let i = 0; i < this.state.folders.length; i++) {
+      if (this.state.folders[i].folderId > biggest) {
+        biggest = this.state.folders[i].folderId;
+      }
+    }
     const folder = {
-      folderName: 'Folder ' + count,
+      folderName: 'Folder ' + biggest,
       userId: this.userId
     };
+    this.count++;
     const req = {
       method: 'POST',
       headers: {
@@ -94,12 +102,7 @@ export default class Home extends React.Component {
   clickFolder(folderId) {
     this.setState({ openedId: folderId });
     this.displayCards(folderId);
-    this.createNew = this.state.folders.length > 0
-      ? <img className="create-new-flashcards" onClick={() => this.props.setActiveFolder(this.state.openedId)}></img>
-      : null;
-    this.trash = this.state.folders.length > 0
-      ? <img className="trash" onClick={() => this.trashFolder(this.state.openedId)}></img>
-      : null;
+    this.folderClicked = true;
   }
 
   recentBatch() {
@@ -113,6 +116,11 @@ export default class Home extends React.Component {
               for (let j = 0; j < batches.length; j++) {
                 this.recentArray.push(batches[j]);
               }
+              if (this.recentArray.length === 0) {
+                this.recentArray.push({
+                  batchId: -1
+                });
+              }
             })
             .catch(err => console.error('Fetch batches failed!', err));
         }
@@ -121,6 +129,13 @@ export default class Home extends React.Component {
   }
 
   trashFolder(folderId) {
+    this.folderClicked = false;
+    for (let a = 0; a < this.state.folders.length; a++) {
+      if (folderId === this.state.folders[a].folderId) {
+        this.state.folders.splice(a, 1);
+        --a;
+      }
+    }
     const req = {
       method: 'DELETE',
       headers: {
@@ -146,9 +161,8 @@ export default class Home extends React.Component {
           for (let c = 0; c < result.length; c++) {
             fetch(`api/cards/${result[c].cardId}`, req)
               .then(res1 => res1.json())
-              .then(result1 => {})
+              .then(result1 => { })
               .catch(error1 => console.error('Delete cards error!', error1));
-
           }
         })
         .catch(error => console.error('Add batchId array error!', error));
@@ -173,6 +187,15 @@ export default class Home extends React.Component {
   }
 
   render() {
+    this.addFolder = this.state.folders.length < this.maxFolders
+      ? <img className="add-new-folder" onClick={this.addNewFolder}></img>
+      : null;
+    this.createNew = this.folderClicked && this.state.batches.length < this.maxBatches
+      ? <img className="create-new-flashcards" onClick={() => this.props.setActiveFolder(this.state.openedId)}></img>
+      : null;
+    this.trash = this.folderClicked && this.state.folders.length > 0
+      ? <img className="trash" onClick={() => this.trashFolder(this.state.openedId)}></img>
+      : null;
     this.folders = this.state.folders.map(folder => (
       <div key={folder.folderId}>
         <div className={`folder ${folder.folderId === this.state.openedId ? 'opened-folder' : 'closed-folder'}`}
@@ -192,6 +215,7 @@ export default class Home extends React.Component {
         <span className="title">{share.batchName}</span>
       </div>
     ));
+
     if (!this.context.user) return <Redirect to="sign-in" />;
     const { handleSignOut } = this.context;
     return (
@@ -205,7 +229,7 @@ export default class Home extends React.Component {
         <h2>My Folders</h2>
         <div className="folders">
           {this.folders}
-          <img className="add-new-folder" onClick={this.addNewFolder}></img>
+          {this.addFolder}
           {this.trash}
         </div>
         <h2>My Flashcards</h2>

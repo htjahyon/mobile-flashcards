@@ -28,6 +28,7 @@ export default class SelfAssessment extends React.Component {
     this.change = false;
     this.color = [];
     this.text = [];
+    this.maxScores = 8;
     this.state =
     {
       title: this.title,
@@ -36,6 +37,7 @@ export default class SelfAssessment extends React.Component {
       color: null
     };
 
+    this.checkSpace = this.checkSpace.bind(this);
     this.previousClick = this.previousClick.bind(this);
     this.nextClick = this.nextClick.bind(this);
     this.wrong = this.wrong.bind(this);
@@ -56,6 +58,28 @@ export default class SelfAssessment extends React.Component {
       this.color.push(null);
       this.text.push('');
     }
+    this.checkSpace();
+  }
+
+  checkSpace() {
+    fetch(`/api/scores/${this.userId}`)
+      .then(res => res.json())
+      .then(result => {
+        if (result.length >= this.maxScores) {
+          const smallest = result[0].scoreId;
+          const req = {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          };
+          fetch(`/api/scores/${smallest}`, req)
+            .then(res2 => res2.json())
+            .then(result2 => { })
+            .catch(error2 => console.error('Delete scores failed!', error2));
+        }
+      })
+      .catch(error => console.error('Get scores failed!', error));
   }
 
   previousClick() {
@@ -127,6 +151,7 @@ export default class SelfAssessment extends React.Component {
 
   postResult() {
     if (!this.change) return;
+    this.checkSpace();
     const folderId = this.batch.folderId;
     if (typeof folderId === 'undefined') {
       const score = {
@@ -181,8 +206,8 @@ export default class SelfAssessment extends React.Component {
     return (
       <div style={style.container}>
         <div style={style.icons}>
-          <a href="#" onClick={this.postResult}><img className="home-icon"></img></a>
-          <a href="#scores" onClick={this.postResult}><img className="scores2"></img></a>
+          <a href="#"><img className="home-icon"></img></a>
+          <a href="#scores"><img className="scores2"></img></a>
           <h1 className="w-100 create-title">{this.title}</h1>
           <div className="stats">
             <span style={{ color: 'green' }}>Correct: {this.good}</span>
@@ -190,6 +215,7 @@ export default class SelfAssessment extends React.Component {
             <span style={{ color: 'gray' }}>Skipped: {this.flashcards.length - this.good - this.bad}</span>
           </div>
           <a href="#edit-cards"><img className="edit" onClick={() => this.props.setActiveBatch(this.batch)}></img></a>
+          <img className="post" onClick={this.postResult}></img>
         </div>
         <h2 className="track-cards">{this.index + 1}/{this.flashcards.length}</h2>
         <h2 style={this.state.color}>{this.state.text}</h2>
