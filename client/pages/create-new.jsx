@@ -19,7 +19,6 @@ export default class CreateNew extends React.Component {
     super(props);
     this.flashcards = [];
     this.index = 0;
-    this.priorLength = 1;
     this.question = true;
     this.isDeletedAll = false;
     this.userId = this.props.userId;
@@ -28,10 +27,12 @@ export default class CreateNew extends React.Component {
     this.batchId = null;
     this.start = false;
     this.display = null;
+    this.maxCards = 100;
     this.state =
     {
       title: 'Untitled',
-      content: 'Add question.'
+      content: 'Add question.',
+      deleteAll: false
     };
     this.onChangeTitle = this.onChangeTitle.bind(this);
     this.onChangeContent = this.onChangeContent.bind(this);
@@ -159,7 +160,7 @@ export default class CreateNew extends React.Component {
         .then(result => { })
         .catch(error => console.error('Delete cards error!', error));
     }
-    this.isDeletedAll = true;
+    this.setState({ deleteAll: true });
   }
 
   previousClick() {
@@ -228,6 +229,7 @@ export default class CreateNew extends React.Component {
   }
 
   addCard() {
+    if (this.flashcards.length >= this.maxCards) return;
     this.start = true;
     this.saveCard(this.index);
     this.index = this.flashcards.length;
@@ -259,7 +261,7 @@ export default class CreateNew extends React.Component {
       ? 'Question'
       : 'Answer';
     const length = this.start === true ? this.flashcards.length : 1;
-    if (this.isDeletedAll) {
+    if (this.state.deleteAll) {
       return (
         <div style={style.container}>
           <h1 className="track-cards">Flashcards Deleted!</h1>
@@ -272,22 +274,22 @@ export default class CreateNew extends React.Component {
       <div style={style.container}>
         <div style={style.icons}>
           <a href="#"><img className="home-icon"></img></a>
-          <form className="w-100 create-title">
-            <div className="mb-3">
-              <input
-                required
-                autoFocus
-                id="flashcardsName"
-                type="text"
-                name="flashcardsName"
-                value={this.state.title}
-                onChange={this.onChangeTitle}
-                className="flashcards-title bg-light" />
-            </div>
-          </form>
           <img className="save-all" onClick={this.saveAll}></img>
           <img className="delete-all" onClick={this.deleteAll}></img>
         </div>
+        <form className="w-100 create-title">
+          <div className="mb-3">
+            <input
+              required
+              autoFocus
+              id="flashcardsName"
+              type="text"
+              name="flashcardsName"
+              value={this.state.title}
+              onChange={this.onChangeTitle}
+              className="flashcards-title bg-light" />
+          </div>
+        </form>
         <h2 className="track-cards">{this.index + 1}/{length}</h2>
         <div className="space">
           <img className="previous" onClick={this.previousClick} />

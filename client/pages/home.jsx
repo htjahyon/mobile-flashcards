@@ -20,6 +20,7 @@ export default class Home extends React.Component {
     this.batches = null;
     this.maxFolders = 10;
     this.maxBatches = 18;
+    this.maxReceived = 30;
     this.addFolder = null;
     this.createNew = null;
     this.trash = null;
@@ -174,6 +175,11 @@ export default class Home extends React.Component {
     fetch(`/api/receive/${this.userId}`)
       .then(res => res.json())
       .then(result => {
+        const temp = [];
+        const end = result.length < this.maxReceived ? result.length : this.maxReceived;
+        for (let i = 0; i < end; i++) {
+          temp.push(result[i]);
+        }
         this.setState({ received: result });
       })
       .catch(error => console.error('getNotSent failed!', error));
@@ -197,20 +203,21 @@ export default class Home extends React.Component {
       ? <img className="trash" onClick={() => this.trashFolder(this.state.openedId)}></img>
       : null;
     this.folders = this.state.folders.map(folder => (
-      <div key={folder.folderId}>
-        <div className={`folder ${folder.folderId === this.state.openedId ? 'opened-folder' : 'closed-folder'}`}
-        onClick={() => this.clickFolder(folder.folderId)}></div>
-        <span className="title">{folder.folderName}</span>
+      <div className="icon" key={folder.folderId}>
+        <div className={`icon ${folder.folderId === this.state.openedId ? 'opened-folder' : 'closed-folder'}`}
+          onClick={() => this.clickFolder(folder.folderId)}>
+        </div>
+          <span className="title">{folder.folderName}</span>
       </div>
     ));
     this.batches = this.state.batches.map(batch => (
-      <div className="folder" key={batch.batchId}>
+      <div className="icon" key={batch.batchId}>
        <a href="#edit-cards"><div className="batch" onClick={() => this.props.setActiveBatch(batch)}></div></a>
         <span className="title">{batch.batchName}</span>
       </div>
     ));
     this.received = this.state.received.map(share => (
-      <div className="folder" key={share.shareId}>
+      <div className="icon" key={share.shareId}>
         <a href="#edit-cards"><div className="batch" onClick={() => this.props.setActiveBatch(share)}></div></a>
         <span className="title">{share.batchName}</span>
       </div>

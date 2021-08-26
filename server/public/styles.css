@@ -86,14 +86,14 @@ h2 {
   cursor: pointer;
 }
 
-.folder {
+.icon {
   display: flex;
   flex-direction: column;
   height: 70px;
 }
 
 .title {
-  width: 90px;
+  width: 95px;
   font-size: 15px;
   margin-left: 5px;
 }
@@ -202,7 +202,7 @@ h2 {
 }
 
 .post {
-  width: 200px;
+  width: 90px;
   height: 100px;
   background-repeat: no-repeat;
   background-image: url(./images/post.png);
@@ -326,6 +326,7 @@ button {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  overflow: scroll;
 }
 
 .shrug {

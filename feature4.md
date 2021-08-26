@@ -9,14 +9,14 @@ title: "Feature: User can organize flashcards."
 > ##### What capability will users have when this feature is merged?
 ​
 <!-- write your feature below this line, i.e. "User can..." -->
-After the flashcards have been created, users can put them in folders and give them names.
+After the flashcards have been created, users can put them in folders.
 ​
 ## �� Functionality
 ​
 > ##### A description of how the application will work from the perspective of the user.
 ​
 <!-- write your plan below this line -->
-​The user clicks on the flashcards icon and type in the name. User clicks on the add folder icon and type in the name. User can click and drag flashcards into a folder.
+​The user clicks on the flashcards icon and allow uses to type in the name. User clicks on the add folder icon to create a folder to save flashcards.
 ## ��️ Wireframes
 ​
 > ##### Wireframe screenshot(s) of what the app should look like when it is complete.

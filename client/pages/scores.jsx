@@ -36,10 +36,10 @@ export default class Scores extends React.Component {
       const percent = Math.round(score.correct / score.total * 100);
       return (
           <tr key={score.scoreId}>
-            <td>{score.folderName}</td>
-            <td>{score.batchName}</td>
-            <td>{score.correct}/{score.total}</td>
-            <td>{percent}%</td>
+            <td className="data">{score.folderName}</td>
+            <td className="data">{score.batchName}</td>
+            <td className="data">{score.correct}/{score.total}</td>
+            <td className="data">{percent}%</td>
           </tr>
       );
     });
@@ -61,10 +61,10 @@ export default class Scores extends React.Component {
         <table className="table">
           <thead>
             <tr>
-            <th scope="column">Folders</th>
-            <th scope="column">Batches</th>
-            <th scope="column">Correct/Total</th>
-            <th scope="column">Percentages</th>
+              <th scope="column">Folders</th>
+              <th scope="column">Batches</th>
+              <th scope="column">Correct/Total</th>
+              <th scope="column">Percentages</th>
             </tr>
           </thead>
             <tbody>

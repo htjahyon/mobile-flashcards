@@ -28,7 +28,7 @@ export default class SelfAssessment extends React.Component {
     this.change = false;
     this.color = [];
     this.text = [];
-    this.maxScores = 8;
+    this.maxScores = 10;
     this.state =
     {
       title: this.title,
@@ -208,15 +208,15 @@ export default class SelfAssessment extends React.Component {
         <div style={style.icons}>
           <a href="#"><img className="home-icon"></img></a>
           <a href="#scores"><img className="scores2"></img></a>
-          <h1 className="w-100 create-title">{this.title}</h1>
           <div className="stats">
-            <span style={{ color: 'green' }}>Correct: {this.good}</span>
-            <span style={{ color: 'red' }}>Wrong: {this.bad}</span>
-            <span style={{ color: 'gray' }}>Skipped: {this.flashcards.length - this.good - this.bad}</span>
+            <span className="title" style={{ color: 'green' }}>Correct: {this.good}</span>
+            <span className="title" style={{ color: 'red' }}>Wrong: {this.bad}</span>
+            <span className="title" style={{ color: 'gray' }}>Skipped: {this.flashcards.length - this.good - this.bad}</span>
           </div>
           <a href="#edit-cards"><img className="edit" onClick={() => this.props.setActiveBatch(this.batch)}></img></a>
           <img className="post" onClick={this.postResult}></img>
         </div>
+        <h2 className="w-100 create-title">{this.title}</h2>
         <h2 className="track-cards">{this.index + 1}/{this.flashcards.length}</h2>
         <h2 style={this.state.color}>{this.state.text}</h2>
         <div className="space">

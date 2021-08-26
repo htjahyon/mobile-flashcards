@@ -119,7 +119,10 @@ export default class Share extends React.Component {
         };
         fetch('/api/share', req)
           .then(res => res.json())
-          .then(result => { this.deleteBatch(result.batchId); })
+          .then(result => {
+            this.deleteBatch(result.batchId);
+            this.getSent(openedId);
+          })
           .catch(error => console.error('Fetch sendBatch failed!', error));
       }
     }
