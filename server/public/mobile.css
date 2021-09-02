@@ -12,6 +12,10 @@
     margin: 0 auto;
   }
 
+  .author {
+    text-align: center;
+  }
+
   .scores,
   .recently-made,
   .share,
@@ -106,6 +110,7 @@
 
   .create-title {
     text-align: center;
+    height: 100px;
   }
 
   .workspace {
@@ -140,7 +145,7 @@
 
   .flashcards-title {
     width: 50%;
-    height: 15px;
+    height: 30px;
   }
 
   .save-all {

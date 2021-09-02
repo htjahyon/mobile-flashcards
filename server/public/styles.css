@@ -11,6 +11,10 @@ img {
   margin: 0 auto;
 }
 
+.author {
+  text-align: center;
+}
+
 .scores,
 .recently-made,
 .share,
@@ -133,7 +137,7 @@ h2 {
 
 .flashcards-title {
   width: 50%;
-  height: 30px;
+  height: 35px;
 }
 
 .save-all {
