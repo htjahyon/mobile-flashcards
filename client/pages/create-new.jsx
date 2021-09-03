@@ -265,7 +265,7 @@ export default class CreateNew extends React.Component {
       return (
         <div style={style.container}>
           <h1 className="track-cards">Flashcards Deleted!</h1>
-          <img className="trash-can track-cards"></img>
+          <div className="trash-can track-cards"></div>
           <a href="#" className="track-cards">Go Home</a>
         </div>
       );
@@ -273,9 +273,9 @@ export default class CreateNew extends React.Component {
     return (
       <div style={style.container}>
         <div style={style.icons}>
-          <a href="#"><img className="home-icon"></img></a>
-          <img className="save-all" onClick={this.saveAll}></img>
-          <img className="delete-all" onClick={this.deleteAll}></img>
+          <a className="home-icon" href="#"></a>
+          <div className="save-all" onClick={this.saveAll}></div>
+          <div className="delete-all" onClick={this.deleteAll}></div>
         </div>
         <form className="w-100 create-title">
           <div className="mb-3">
@@ -292,7 +292,7 @@ export default class CreateNew extends React.Component {
         </form>
         <h2 className="track-cards">{this.index + 1}/{length}</h2>
         <div className="space">
-          <img className="previous" onClick={this.previousClick} />
+          <div className="previous" onClick={this.previousClick} />
           <form className="w-100">
             <div className="mb-3">
               <textarea
@@ -306,13 +306,13 @@ export default class CreateNew extends React.Component {
                 className="form-control bg-light content" />
             </div>
           </form>
-          <img className="next" onClick={this.nextClick} />
+          <div className="next" onClick={this.nextClick} />
         </div>
         <h2 className="track-cards">{sideText}</h2>
         <div className="bottom-space">
-          <img className="delete" onClick={() => this.deleteCard(this.index)}></img>
-          <img className="question-answer" onClick={this.flipCard}></img>
-          <img className="add" onClick={this.addCard}></img>
+          <div className="delete" onClick={() => this.deleteCard(this.index)}></div>
+          <div className="question-answer" onClick={this.flipCard}></div>
+          <div className="add" onClick={this.addCard}></div>
         </div>
       </div>
     );

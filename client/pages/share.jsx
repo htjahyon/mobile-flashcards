@@ -8,6 +8,7 @@ const style = {
     flexDirection: 'column'
   },
   icons: {
+    display: 'flex',
     width: '100%',
     height: '100px',
     marginBottom: '10%'
@@ -21,7 +22,7 @@ export default class Share extends React.Component {
     this.batches = null;
     this.received = null;
     this.sent = null;
-    this.maxUsers = 5;
+    this.maxUsers = 20;
     this.maxBatches = 6;
     this.maxSent = 20;
     this.maxReceived = 30;
@@ -214,8 +215,8 @@ export default class Share extends React.Component {
     return (
       <div style={style.container}>
         <div style={style.icons}>
-          <a href="#"><img className="home-icon"></img></a>
-          <img className="track-cards share-logo"></img>
+          <a href="#"><div className="home-icon"></div></a>
+          <div className="track-cards share-logo"></div>
         </div>
         <h2>Other Users</h2>
         <div className="users">

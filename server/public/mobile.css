@@ -1,8 +1,4 @@
 @media (max-width: 479px) {
-  img {
-    border: none;
-  }
-
   .header-picture {
     width: 65%;
     height: 50px;
@@ -65,6 +61,7 @@
     background-color: rgb(189, 189, 189);
     display: flex;
     flex-wrap: wrap;
+    overflow: scroll;
   }
 
   .batch,
@@ -173,6 +170,7 @@
     height: 100px;
     background-repeat: no-repeat;
     background-image: url(./mobile-images/previous2.png);
+    cursor: pointer;
   }
 
   .next {
@@ -180,6 +178,7 @@
     height: 100px;
     background-repeat: no-repeat;
     background-image: url(./mobile-images/next2.png);
+    cursor: pointer;
   }
 
   .track-cards {
