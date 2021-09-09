@@ -27,10 +27,9 @@
 .save-all,
 .delete-all,
 .self-assessment {
-  width: 25%;
+  width: 100px;
   height: 100px;
   background-repeat: no-repeat;
-  justify-content: center;
   cursor: pointer;
 }
 
@@ -40,7 +39,6 @@
   width: 10%;
   height: 100px;
   background-repeat: no-repeat;
-  justify-content: center;
   cursor: pointer;
 }
 
