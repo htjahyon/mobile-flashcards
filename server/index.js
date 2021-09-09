@@ -22,26 +22,42 @@ app.use(jsonMiddleware);
 app.use(staticMiddleware);
 
 app.post('/api/auth/sign-up', (req, res, next) => {
-  const { username, password, email } = req.body;
-  if (!username || !password || !email) {
+  const { username, password } = req.body;
+  let { email } = req.body;
+  if (!username || !password) {
     throw new ClientError(400, 'username and password are required fields');
   }
-  argon2
-    .hash(password)
-    .then(hashedPassword => {
-      const sql = `
+  const sql = `select *
+                from "users";
+              `;
+  db.query(sql)
+    .then(result => {
+      let length = result.rows.length;
+      email = 'none' + ++length;
+      argon2
+        .hash(password)
+        .then(hashedPassword => {
+
+          const sql2 = `
         insert into "users" ("username", "hashedPassword", "email")
         values ($1, $2, $3)
         returning "userId", "username"
       `;
-      const params = [username, hashedPassword, email];
-      return db.query(sql, params);
+          const params = [username, hashedPassword, email];
+          return db.query(sql2, params);
+        })
+        .then(result => {
+          const [user] = result.rows;
+          res.status(201).json(user);
+        })
+        .catch(err => next(err));
     })
-    .then(result => {
-      const [user] = result.rows;
-      res.status(201).json(user);
-    })
-    .catch(err => next(err));
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({
+        error: 'An unexpected error occurred.'
+      });
+    });
 });
 
 app.post('/api/auth/sign-in', (req, res, next) => {
@@ -659,7 +675,7 @@ app.delete('/api/scores/:scoreId', (req, res, next) => {
       const score = result.rows[0];
       if (!score) {
         res.status(404).json({
-          error: `Cannot find folder with "folderId" ${scoreId}`
+          error: `Cannot find score with "scoreId" ${scoreId}`
         });
       } else {
         res.json(score);
@@ -700,6 +716,39 @@ app.get('/api/users/:userId', (req, res, next) => {
         });
       } else {
         res.status(200).json(result.rows);
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({
+        error: 'An unexpected error occurred.'
+      });
+    });
+});
+
+app.delete('/api/users/:userId', (req, res, next) => {
+  const userId = parseInt(req.params.userId, 10);
+  if (!Number.isInteger(userId) || userId <= 0) {
+    res.status(400).json({
+      error: '"userId" must be a positive integer.'
+    });
+    return;
+  }
+  const sql = `
+    delete from "users"
+     where "userId" = $1
+     returning *;
+  `;
+  const param = [userId];
+  db.query(sql, param)
+    .then(result => {
+      const user = result.rows[0];
+      if (!user) {
+        res.status(404).json({
+          error: `Cannot find user with "userId" ${userId}`
+        });
+      } else {
+        res.json(user);
       }
     })
     .catch(err => {

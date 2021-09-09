@@ -123,11 +123,12 @@ export default class Share extends React.Component {
           .then(result => {
             this.deleteBatch(result.batchId);
             this.getSent(openedId);
+            this.getNotSent();
+            this.displayMyCards();
           })
           .catch(error => console.error('Fetch sendBatch failed!', error));
       }
     }
-
   }
 
   getName(batchId) {
@@ -191,7 +192,7 @@ export default class Share extends React.Component {
   render() {
     this.users = this.state.users.map(user => (
       <div key={user.userId}>
-        <div className={`user ${user.userId === this.state.openedId ? 'person-black' : 'person-white'}`}
+        <div className={`${user.userId === this.state.openedId ? 'person-black' : 'person-white'}`}
           onClick={() => this.clickUser(user.userId, user.username)}></div>
         <span className="title">{user.username}</span>
       </div>

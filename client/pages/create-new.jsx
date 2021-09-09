@@ -122,6 +122,13 @@ export default class CreateNew extends React.Component {
 
   saveAll() {
     // save flashcards into a folder
+    const modal = document.querySelector('.modal');
+    modal.style = 'display: flex';
+    window.onclick = function (event) {
+      if (event.target.className === 'ok') {
+        modal.style = 'display: none';
+      }
+    };
     this.title = this.state.title;
     this.saveCard(this.index);
     const batch = {
@@ -314,6 +321,10 @@ export default class CreateNew extends React.Component {
           <div className="question-answer" onClick={this.flipCard}></div>
           <div className="add" onClick={this.addCard}></div>
         </div>
+        <div className="modal">
+          <p className="modalText">Flashcards Saved!</p>
+          <button className="ok">OK</button>
+        </div>;
       </div>
     );
   }

@@ -152,6 +152,13 @@ export default class SelfAssessment extends React.Component {
   postResult() {
     if (!this.change) return;
     this.checkSpace();
+    const modal = document.querySelector('.modal');
+    modal.style = 'display: flex';
+    window.onclick = function (event) {
+      if (event.target.className === 'ok') {
+        modal.style = 'display: none';
+      }
+    };
     const folderId = this.batch.folderId;
     if (typeof folderId === 'undefined') {
       const score = {
@@ -230,6 +237,10 @@ export default class SelfAssessment extends React.Component {
           <div className="question-answer" onClick={this.flipCard}></div>
           <div className="correct" onClick={this.correct}></div>
         </div>
+        <div className="modal">
+          <p className="modalText">Score Posted!</p>
+          <button className="ok">OK</button>
+        </div>;
       </div>
     );
   }

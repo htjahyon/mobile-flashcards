@@ -119,7 +119,8 @@ export default class Home extends React.Component {
               }
               if (this.recentArray.length === 0) {
                 this.recentArray.push({
-                  batchId: -1
+                  batchId: -1,
+                  batchName: null
                 });
               }
             })

@@ -1,14 +1,22 @@
 .header-picture {
-  width: 65%;
-  height: 100px;
+  width: 800px;
+  height: 120px;
   background-image: url(./images/header.png);
   justify-content: center;
   background-repeat: no-repeat;
   margin: 0 auto;
 }
 
+.form {
+  width: 350px;
+}
+
 .author {
   text-align: center;
+}
+
+.email {
+  display: block;
 }
 
 .scores,
@@ -29,7 +37,7 @@
 .delete,
 .question-answer,
 .add {
-  width: 20%;
+  width: 10%;
   height: 100px;
   background-repeat: no-repeat;
   justify-content: center;
@@ -274,7 +282,7 @@ h2 {
 .table {
   margin-top: 15%;
   width: 100%;
-  height: 400px;
+  height: 450px;
   background-color: rgb(189, 189, 189);
 }
 
@@ -345,4 +353,31 @@ button {
   margin-left: 25%;
   background-repeat: no-repeat;
   background-image: url(./images/shrug.png);
+}
+
+.modal {
+  display: none;
+  flex-direction: column;
+  background-color: white;
+  position: fixed;
+  left: 40%;
+  top: 40%;
+  justify-content: center;
+  align-content: center;
+  width: 250px;
+  height: 125px;
+  font-size: 20px;
+  z-index: 1;
+  overflow: auto;
+  border: solid;
+}
+
+.modalText {
+  text-align: center;
+}
+
+.ok {
+  justify-content: center;
+  margin-left: 25%;
+  cursor: pointer;
 }
