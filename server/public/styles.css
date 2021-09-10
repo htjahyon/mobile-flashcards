@@ -36,7 +36,7 @@
 .delete,
 .question-answer,
 .add {
-  width: 7%;
+  width: 75px;
   height: 100px;
   background-repeat: no-repeat;
   cursor: pointer;
@@ -248,15 +248,15 @@ h2 {
 }
 
 .wrong {
-  width: 7%;
-  height: 100px;
+  width: 75px;
+  height: 80px;
   background-repeat: no-repeat;
   background-image: url(./images/wrong.png);
   cursor: pointer;
 }
 
 .correct {
-  width: 7%;
+  width: 75px;
   height: 100px;
   background-repeat: no-repeat;
   background-image: url(./images/correct.png);
