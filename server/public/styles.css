@@ -36,7 +36,7 @@
 .delete,
 .question-answer,
 .add {
-  width: 10%;
+  width: 7%;
   height: 100px;
   background-repeat: no-repeat;
   cursor: pointer;
@@ -161,7 +161,7 @@ h2 {
 .space,
 .bottom-space {
   display: flex;
-  margin-top: 10%;
+  margin-top: 5%;
   justify-content: center;
 }
 
@@ -248,7 +248,7 @@ h2 {
 }
 
 .wrong {
-  width: 15%;
+  width: 7%;
   height: 100px;
   background-repeat: no-repeat;
   background-image: url(./images/wrong.png);
@@ -256,7 +256,7 @@ h2 {
 }
 
 .correct {
-  width: 15%;
+  width: 7%;
   height: 100px;
   background-repeat: no-repeat;
   background-image: url(./images/correct.png);
@@ -281,7 +281,6 @@ h2 {
   margin-top: 15%;
   width: 100%;
   height: 450px;
-  background-color: rgb(189, 189, 189);
 }
 
 tbody,

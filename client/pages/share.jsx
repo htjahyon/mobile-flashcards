@@ -23,8 +23,8 @@ export default class Share extends React.Component {
     this.received = null;
     this.sent = null;
     this.maxUsers = 20;
-    this.maxBatches = 6;
-    this.maxSent = 20;
+    this.maxBatches = 50;
+    this.maxSent = 30;
     this.maxReceived = 30;
     this.name = '';
     this.userId = this.props.userId;
@@ -75,7 +75,8 @@ export default class Share extends React.Component {
           fetch(`/api/batches/${folders[i].folderId}`)
             .then(res => res.json())
             .then(batches => {
-              for (let j = 0; j < batches.length; j++) {
+              const end = this.maxBatches < batches.length ? this.maxBatches : batches.length;
+              for (let j = 0; j < end; j++) {
                 this.myArray.push(batches[j]);
               }
               this.setState({ batches: this.myArray });
@@ -127,6 +128,13 @@ export default class Share extends React.Component {
             this.displayMyCards();
           })
           .catch(error => console.error('Fetch sendBatch failed!', error));
+        const modal = document.querySelector('.modal');
+        modal.style = 'display: flex';
+        window.onclick = function (event) {
+          if (event.target.className === 'ok') {
+            modal.style = 'display: none';
+          }
+        };
       }
     }
   }
@@ -236,7 +244,11 @@ export default class Share extends React.Component {
         <div className="bullets">
           <form>{this.sent}</form>
         </div>
-      </div>
+        <div className="modal">
+            <p className="modalText">Batch(es) Sent!</p>
+            <button className="ok">OK</button>
+        </div>
+      </div >
     );
   }
 }

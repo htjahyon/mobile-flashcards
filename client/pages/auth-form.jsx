@@ -88,6 +88,10 @@ export default class AuthForm extends React.Component {
             { submitButtonText }
           </button>
         </div>
+        <div className="modal">
+          <p className="modalText"> Wrong Username or Password!</p>
+          <button className="ok">OK</button>
+        </div>
       </form>
     );
   }
