@@ -182,7 +182,7 @@ export default class Home extends React.Component {
         for (let i = 0; i < end; i++) {
           temp.push(result[i]);
         }
-        this.setState({ received: result });
+        this.setState({ received: temp });
       })
       .catch(error => console.error('getNotSent failed!', error));
   }
@@ -241,12 +241,12 @@ export default class Home extends React.Component {
           {this.addFolder}
           {this.trash}
         </div>
-        <h2>My Flashcards</h2>
+        <h2>My Batches</h2>
         <div className="workspace">
           {this.batches}
           <a href="#create-new">{this.createNew}</a>
         </div>
-        <h2>Flashcards From Other Users</h2>
+        <h2>Batches From Other Users</h2>
         <div className="workspace">
           {this.received}
         </div>

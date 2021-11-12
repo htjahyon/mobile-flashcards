@@ -36,6 +36,7 @@ export default class CreateNew extends React.Component {
     };
     this.onChangeTitle = this.onChangeTitle.bind(this);
     this.onChangeContent = this.onChangeContent.bind(this);
+    this.onChangeIndex = this.onChangeIndex.bind(this);
     this.saveCard = this.saveCard.bind(this);
     this.saveAll = this.saveAll.bind(this);
     this.deleteAll = this.deleteAll.bind(this);
@@ -47,6 +48,8 @@ export default class CreateNew extends React.Component {
   }
 
   componentDidMount() {
+    const numElement = document.getElementById('indexCreate');
+    numElement.value = 1;
     this.title = this.state.title;
     const batch = {
       userId: this.userId,
@@ -93,6 +96,17 @@ export default class CreateNew extends React.Component {
 
   onChangeContent(event) {
     this.setState({ content: event.target.value });
+  }
+
+  onChangeIndex(event) {
+    const numElement = document.getElementById('indexCreate');
+    this.index = Number(numElement.value) - 1;
+    if (this.index >= 0 && this.index < this.flashcards.length) {
+      this.setState(
+        {
+          content: this.flashcards[this.index].question
+        });
+    }
   }
 
   saveCard(index) {
@@ -175,6 +189,8 @@ export default class CreateNew extends React.Component {
     this.question = true;
     if (this.index > 0) {
       this.index--;
+      const numElement = document.getElementById('indexCreate');
+      numElement.value--;
       this.setState(
         {
           content: this.flashcards[this.index].question
@@ -188,6 +204,8 @@ export default class CreateNew extends React.Component {
     this.question = true;
     if (this.index < this.flashcards.length - 1) {
       this.index++;
+      const numElement = document.getElementById('indexCreate');
+      numElement.value++;
       this.setState(
         {
           content: this.flashcards[this.index].question
@@ -284,7 +302,7 @@ export default class CreateNew extends React.Component {
           <div className="save-all" onClick={this.saveAll}></div>
           <div className="delete-all" onClick={this.deleteAll}></div>
         </div>
-        <form className="w-100 create-title">
+        <form className="w-100 create-title">Batch Name:
           <div className="mb-3">
             <input
               required
@@ -297,7 +315,15 @@ export default class CreateNew extends React.Component {
               className="flashcards-title bg-light" />
           </div>
         </form>
-        <h2 className="track-cards">{this.index + 1}/{length}</h2>
+        <h2 className="track-cards">
+          <input
+          required
+          autoFocus
+          id="indexCreate"
+          type="text"
+          name="index"
+          onChange={this.onChangeIndex}
+          className="index bg-light" />/{length}</h2>
         <div className="space">
           <div className="previous" onClick={this.previousClick} />
           <form className="w-100">

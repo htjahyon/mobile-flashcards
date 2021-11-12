@@ -150,6 +150,11 @@ h2 {
   height: 35px;
 }
 
+.index {
+  width: 50px;
+  height: 35px;
+}
+
 .save-all {
   background-image: url(./images/save-all.png);
 }
@@ -369,11 +374,31 @@ button {
   border: solid;
 }
 
-.modalText {
+.deleteModal {
+  display: none;
+  flex-direction: column;
+  background-color: white;
+  position: fixed;
+  left: 40%;
+  top: 40%;
+  justify-content: center;
+  align-content: center;
+  width: 400px;
+  height: 270px;
+  font-size: 20px;
+  z-index: 1;
+  overflow: auto;
+  border: solid;
+}
+
+.modalText,
+.deleteText {
   text-align: center;
 }
 
-.ok {
+.ok,
+.yes,
+.no {
   justify-content: center;
   margin-left: 25%;
   cursor: pointer;

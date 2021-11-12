@@ -25,14 +25,17 @@ export default class EditCards extends React.Component {
     this.userId = this.props.userId;
     this.title = this.props.batch.batchName;
     this.batch = this.props.batch;
+    this.shareId = this.props.batch.shareId;
     this.state =
     {
       title: this.title,
       content: '',
       deleteAll: false
     };
+    this.startOver = this.startOver.bind(this);
     this.onChangeTitle = this.onChangeTitle.bind(this);
     this.onChangeContent = this.onChangeContent.bind(this);
+    this.onChangeIndex = this.onChangeIndex.bind(this);
     this.saveCard = this.saveCard.bind(this);
     this.saveAll = this.saveAll.bind(this);
     this.deleteAll = this.deleteAll.bind(this);
@@ -44,6 +47,8 @@ export default class EditCards extends React.Component {
   }
 
   componentDidMount() {
+    const numElement = document.getElementById('index');
+    numElement.value = 1;
     if (this.batch.batchId === -1) return;
     fetch(`/api/cards/${this.batch.batchId}`)
       .then(res => res.json())
@@ -83,6 +88,17 @@ export default class EditCards extends React.Component {
     this.setState({ content: event.target.value });
   }
 
+  onChangeIndex(event) {
+    const numElement = document.getElementById('index');
+    this.index = Number(numElement.value) - 1;
+    if (this.index >= 0 && this.index < this.flashcards.length) {
+      this.setState(
+        {
+          content: this.flashcards[this.index].question
+        });
+    }
+  }
+
   saveCard(index) {
     if (this.question) {
       this.flashcards[index].question = this.state.content;
@@ -109,7 +125,6 @@ export default class EditCards extends React.Component {
   }
 
   saveAll() {
-    // save flashcards into a folder
     const modal = document.querySelector('.modal');
     modal.style = 'display: flex';
     window.onclick = function (event) {
@@ -139,6 +154,18 @@ export default class EditCards extends React.Component {
   }
 
   deleteAll() {
+    let choice = null;
+    if (typeof this.shareId !== 'undefined') {
+      const deleteModal = document.querySelector('.deleteModal');
+      deleteModal.style = 'display: flex';
+      window.onclick = function (event) {
+        if (event.target.className === 'yes' || event.target.className === 'no') {
+          deleteModal.style = 'display: none';
+          choice = event.target.className;
+        }
+      };
+    }
+    if (choice === 'no') return;
     const req = {
       method: 'DELETE',
       headers: {
@@ -156,9 +183,8 @@ export default class EditCards extends React.Component {
         .then(result => { })
         .catch(error => console.error('Delete cards error!', error));
     }
-    const shareId = this.props.batch.shareId;
-    if (typeof shareId !== 'undefined') {
-      fetch(`/api/share/${shareId}`, req)
+    if (typeof this.shareId !== 'undefined') {
+      fetch(`/api/share/${this.shareId}`, req)
         .then(res => res.json())
         .then(result => { })
         .catch(error => console.error('Delete shareId failed!', error));
@@ -171,6 +197,8 @@ export default class EditCards extends React.Component {
     this.question = true;
     if (this.index > 0) {
       this.index--;
+      const numElement = document.getElementById('index');
+      numElement.value--;
       this.setState(
         {
           content: this.flashcards[this.index].question
@@ -184,6 +212,8 @@ export default class EditCards extends React.Component {
     this.question = true;
     if (this.index < this.flashcards.length - 1) {
       this.index++;
+      const numElement = document.getElementById('index');
+      numElement.value++;
       this.setState(
         {
           content: this.flashcards[this.index].question
@@ -286,7 +316,7 @@ export default class EditCards extends React.Component {
           <div className="delete-all" onClick={this.deleteAll}></div>
         </div>
         <form className="w-100 create-title">
-          <div className="mb-3">
+          <div className="mb-3">Batch Name:
             <input
               required
               autoFocus
@@ -298,7 +328,15 @@ export default class EditCards extends React.Component {
               className="flashcards-title bg-light" />
           </div>
         </form>
-        <h2 className="track-cards">{this.index + 1}/{this.flashcards.length}</h2>
+        <h2 className="track-cards">
+          <input
+          required
+          autoFocus
+          id="index"
+          type="text"
+          name="index"
+          onChange={this.onChangeIndex}
+          className="index bg-light" />/{this.flashcards.length}</h2>
         <div className="space">
           <div className="previous" onClick={this.previousClick} />
           <form className="w-100">
@@ -325,7 +363,13 @@ export default class EditCards extends React.Component {
         <div className="modal">
           <p className="modalText">Flashcards Saved!</p>
           <button className="ok">OK</button>
-        </div>;
+        </div>
+        <div className="deleteModal">
+          <p className="deleteText">Are you sure you want to delete this shared batch? It will also
+             be deleted on inventory side of the user who created it.</p>
+          <button className="yes">Yes</button>
+          <button className="no">No</button>
+        </div>
       </div>
     );
   }

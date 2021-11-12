@@ -106,11 +106,12 @@ export default class Share extends React.Component {
     }
     for (let j = 0; j < checkedValue.length; j++) {
       if (!this.alreadyThere(checkedValue[j]) && j < this.maxSent) {
+        const getName = this.getName(checkedValue[j]);
         const share = {
           sendUserId: this.userId,
           receiveUserId: openedId,
           batchId: checkedValue[j],
-          batchName: this.getName(checkedValue[j])
+          batchName: getName
         };
         const req = {
           method: 'POST',
@@ -128,15 +129,15 @@ export default class Share extends React.Component {
             this.displayMyCards();
           })
           .catch(error => console.error('Fetch sendBatch failed!', error));
-        const modal = document.querySelector('.modal');
-        modal.style = 'display: flex';
-        window.onclick = function (event) {
-          if (event.target.className === 'ok') {
-            modal.style = 'display: none';
-          }
-        };
       }
     }
+    const modal = document.querySelector('.modal');
+    modal.style = 'display: flex';
+    window.onclick = function (event) {
+      if (event.target.className === 'ok') {
+        modal.style = 'display: none';
+      }
+    };
   }
 
   getName(batchId) {
