@@ -152,6 +152,13 @@ export default class SelfAssessment extends React.Component {
   postResult() {
     if (!this.change) return;
     this.checkSpace();
+    const modal = document.querySelector('.modal');
+    modal.style = 'display: flex';
+    window.onclick = function (event) {
+      if (event.target.className === 'ok') {
+        modal.style = 'display: none';
+      }
+    };
     const folderId = this.batch.folderId;
     if (typeof folderId === 'undefined') {
       const score = {
@@ -206,30 +213,34 @@ export default class SelfAssessment extends React.Component {
     return (
       <div style={style.container}>
         <div style={style.icons}>
-          <a href="#"><img className="home-icon"></img></a>
-          <a href="#scores"><img className="scores2"></img></a>
+          <a href="#"><div className="home-icon"></div></a>
+          <a href="#scores"><div className="scores2"></div></a>
           <div className="stats">
             <span className="title" style={{ color: 'green' }}>Correct: {this.good}</span>
             <span className="title" style={{ color: 'red' }}>Wrong: {this.bad}</span>
             <span className="title" style={{ color: 'gray' }}>Skipped: {this.flashcards.length - this.good - this.bad}</span>
           </div>
-          <a href="#edit-cards"><img className="edit" onClick={() => this.props.setActiveBatch(this.batch)}></img></a>
-          <img className="post" onClick={this.postResult}></img>
+          <a href="#edit-cards"><div className="edit" onClick={() => this.props.setActiveBatch(this.batch)}></div></a>
+          <div className="post" onClick={this.postResult}></div>
         </div>
         <h2 className="w-100 create-title">{this.title}</h2>
         <h2 className="track-cards">{this.index + 1}/{this.flashcards.length}</h2>
         <h2 style={this.state.color}>{this.state.text}</h2>
         <div className="space">
-          <img className="previous" onClick={this.previousClick} />
+          <div className="previous" onClick={this.previousClick} />
           <div className="area">{this.state.content}</div>
-          <img className="next" onClick={this.nextClick} />
+          <div className="next" onClick={this.nextClick} />
         </div>
         <h2 className="track-cards">{sideText}</h2>
         <div className="bottom-space">
-          <img className="wrong" onClick={this.wrong}></img>
-          <img className="question-answer" onClick={this.flipCard}></img>
-          <img className="correct" onClick={this.correct}></img>
+          <div className="wrong" onClick={this.wrong}></div>
+          <div className="question-answer" onClick={this.flipCard}></div>
+          <div className="correct" onClick={this.correct}></div>
         </div>
+        <div className="modal">
+          <p className="modalText">Score Posted!</p>
+          <button className="ok">OK</button>
+        </div>;
       </div>
     );
   }

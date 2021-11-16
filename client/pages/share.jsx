@@ -8,6 +8,7 @@ const style = {
     flexDirection: 'column'
   },
   icons: {
+    display: 'flex',
     width: '100%',
     height: '100px',
     marginBottom: '10%'
@@ -21,9 +22,9 @@ export default class Share extends React.Component {
     this.batches = null;
     this.received = null;
     this.sent = null;
-    this.maxUsers = 5;
-    this.maxBatches = 6;
-    this.maxSent = 20;
+    this.maxUsers = 20;
+    this.maxBatches = 50;
+    this.maxSent = 30;
     this.maxReceived = 30;
     this.name = '';
     this.userId = this.props.userId;
@@ -74,7 +75,8 @@ export default class Share extends React.Component {
           fetch(`/api/batches/${folders[i].folderId}`)
             .then(res => res.json())
             .then(batches => {
-              for (let j = 0; j < batches.length; j++) {
+              const end = this.maxBatches < batches.length ? this.maxBatches : batches.length;
+              for (let j = 0; j < end; j++) {
                 this.myArray.push(batches[j]);
               }
               this.setState({ batches: this.myArray });
@@ -104,11 +106,12 @@ export default class Share extends React.Component {
     }
     for (let j = 0; j < checkedValue.length; j++) {
       if (!this.alreadyThere(checkedValue[j]) && j < this.maxSent) {
+        const getName = this.getName(checkedValue[j]);
         const share = {
           sendUserId: this.userId,
           receiveUserId: openedId,
           batchId: checkedValue[j],
-          batchName: this.getName(checkedValue[j])
+          batchName: getName
         };
         const req = {
           method: 'POST',
@@ -122,11 +125,19 @@ export default class Share extends React.Component {
           .then(result => {
             this.deleteBatch(result.batchId);
             this.getSent(openedId);
+            this.getNotSent();
+            this.displayMyCards();
           })
           .catch(error => console.error('Fetch sendBatch failed!', error));
       }
     }
-
+    const modal = document.querySelector('.modal');
+    modal.style = 'display: flex';
+    window.onclick = function (event) {
+      if (event.target.className === 'ok') {
+        modal.style = 'display: none';
+      }
+    };
   }
 
   getName(batchId) {
@@ -190,7 +201,7 @@ export default class Share extends React.Component {
   render() {
     this.users = this.state.users.map(user => (
       <div key={user.userId}>
-        <div className={`user ${user.userId === this.state.openedId ? 'person-black' : 'person-white'}`}
+        <div className={`${user.userId === this.state.openedId ? 'person-black' : 'person-white'}`}
           onClick={() => this.clickUser(user.userId, user.username)}></div>
         <span className="title">{user.username}</span>
       </div>
@@ -214,8 +225,8 @@ export default class Share extends React.Component {
     return (
       <div style={style.container}>
         <div style={style.icons}>
-          <a href="#"><img className="home-icon"></img></a>
-          <img className="track-cards share-logo"></img>
+          <a href="#"><div className="home-icon"></div></a>
+          <div className="track-cards share-logo"></div>
         </div>
         <h2>Other Users</h2>
         <div className="users">
@@ -234,7 +245,11 @@ export default class Share extends React.Component {
         <div className="bullets">
           <form>{this.sent}</form>
         </div>
-      </div>
+        <div className="modal">
+            <p className="modalText">Batch(es) Sent!</p>
+            <button className="ok">OK</button>
+        </div>
+      </div >
     );
   }
 }

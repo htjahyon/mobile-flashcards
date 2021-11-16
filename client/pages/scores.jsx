@@ -7,6 +7,7 @@ const style = {
     flexDirection: 'column'
   },
   icons: {
+    display: 'flex',
     width: '100%',
     height: '100px'
   }
@@ -47,7 +48,7 @@ export default class Scores extends React.Component {
       return (
       <div style={style.container}>
         <h1 className="track-cards">No Grades Posted Yet!</h1>
-        <img className="track-cards scores-results"></img>
+        <div className="track-cards scores-results"></div>
         <a href="#" className="track-cards">Go Home</a>
       </div>
       );
@@ -55,8 +56,8 @@ export default class Scores extends React.Component {
     return (
       <div style={style.container}>
         <div style={style.icons}>
-          <a href="#"><img className="home-icon"></img></a>
-          <img className="track-cards scores-results"></img>
+          <a href="#"><div className="home-icon"></div></a>
+          <div className="track-cards scores-results"></div>
         </div>
         <table className="table">
           <thead>
