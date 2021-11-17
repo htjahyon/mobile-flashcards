@@ -29,12 +29,15 @@ export default class SelfAssessment extends React.Component {
     this.color = [];
     this.text = [];
     this.maxScores = 10;
+    this.choices = null;
     this.state =
     {
       title: this.title,
       content: '',
       text: '',
-      color: null
+      color: null,
+      choices: [],
+      answer: ''
     };
 
     this.checkSpace = this.checkSpace.bind(this);
@@ -44,6 +47,9 @@ export default class SelfAssessment extends React.Component {
     this.flipCard = this.flipCard.bind(this);
     this.correct = this.correct.bind(this);
     this.postResult = this.postResult.bind(this);
+    this.multipleChoice = this.multipleChoice.bind(this);
+    this.freeResponse = this.freeResponse.bind(this);
+    this.match = this.match.bind(this);
   }
 
   componentDidMount() {
@@ -90,9 +96,19 @@ export default class SelfAssessment extends React.Component {
         {
           content: this.flashcards[this.index].question,
           text: this.text[this.index],
-          color: this.color[this.index]
+          color: this.color[this.index],
+          answer: this.flashcards[this.index].answer
         }
       );
+      const temp = [];
+      let count = 0;
+      for (let i = this.index; i < 4; i++) {
+        if (count >= 4) break;
+        if (typeof this.flashcards[this.index + i] === 'undefined') i = 0;
+        temp.push(this.flashcards[this.index + i]);
+        count++;
+      }
+      this.setState({ choices: temp });
     }
   }
 
@@ -104,9 +120,20 @@ export default class SelfAssessment extends React.Component {
         {
           content: this.flashcards[this.index].question,
           text: this.text[this.index],
-          color: this.color[this.index]
+          color: this.color[this.index],
+          answer: this.flashcards[this.index].answer
         }
       );
+      const temp = [];
+      temp.push(this.flashcards[this.index]);
+      let count = 0;
+      for (let i = this.index; i < 4; i++) {
+        if (count >= 4) break;
+        if (typeof this.flashcards[this.index + i] === 'undefined') i = 0;
+        temp.push(this.flashcards[this.index + i]);
+        count++;
+      }
+      this.setState({ choices: temp });
     }
   }
 
@@ -206,10 +233,60 @@ export default class SelfAssessment extends React.Component {
       .catch(error => console.error('Get folder error!', error));
   }
 
+  multipleChoice() {
+    if (this.flashcards.length < 4) return;
+    const spaceElement = document.querySelector('.space');
+    const mcElement = document.querySelector('.multiple-choice');
+    const freeElement = document.querySelector('.free-response');
+    const radioElement = document.querySelector('.radio');
+    const wrongElement = document.querySelector('.wrong');
+    const correctElement = document.querySelector('.correct');
+    spaceElement.style = 'width: 50%';
+    mcElement.style = 'display: none';
+    freeElement.style = 'display: block';
+    radioElement.style = 'display: flex';
+    wrongElement.style = 'display: none';
+    correctElement.style = 'display: none';
+    this.setState({ answer: this.flashcards[this.index].answer });
+    const temp = [];
+    temp.push(this.flashcards[this.index]);
+    for (let i = this.index; i < 3; i++) {
+      if (i >= 3) i = 0;
+      temp.push(this.flashcards[i]);
+    }
+    this.setState({ choices: temp });
+  }
+
+  freeResponse() {
+    const spaceElement = document.querySelector('.space');
+    const freeElement = document.querySelector('.free-response');
+    const mcElement = document.querySelector('.multiple-choice');
+    const radioElement = document.querySelector('.radio');
+    const wrongElement = document.querySelector('.wrong');
+    const correctElement = document.querySelector('.correct');
+    spaceElement.style = 'width: 100%';
+    mcElement.style = 'display: block';
+    freeElement.style = 'display: none';
+    radioElement.style = 'display: none';
+    wrongElement.style = 'display: block';
+    correctElement.style = 'display: block';
+  }
+
+  match(choiceAnswer) {
+    if (this.state.answer === choiceAnswer) {
+      this.correct();
+    } else this.wrong();
+  }
+
   render() {
     const sideText = this.question === true
       ? 'Question'
       : 'Answer';
+    this.choices = this.state.choices.map(choice => (
+      <label className="radio-dot" key={choice.id} >
+        <input type="radio" name="genre" value={choice.answer} onClick={() => this.match(choice.answer)}/>{choice.answer}
+      </label>
+    ));
     return (
       <div style={style.container}>
         <div style={style.icons}>
@@ -222,14 +299,21 @@ export default class SelfAssessment extends React.Component {
           </div>
           <a href="#edit-cards"><div className="edit" onClick={() => this.props.setActiveBatch(this.batch)}></div></a>
           <div className="post" onClick={this.postResult}></div>
+          <div className="multiple-choice" onClick={this.multipleChoice}></div>
+          <div className="free-response" onClick={this.freeResponse}></div>
         </div>
         <h2 className="w-100 create-title">{this.title}</h2>
         <h2 className="track-cards">{this.index + 1}/{this.flashcards.length}</h2>
         <h2 style={this.state.color}>{this.state.text}</h2>
-        <div className="space">
-          <div className="previous" onClick={this.previousClick} />
-          <div className="area">{this.state.content}</div>
-          <div className="next" onClick={this.nextClick} />
+        <div className="middle">
+          <div className="space">
+            <div className="previous" onClick={this.previousClick} />
+            <div className="area">{this.state.content}</div>
+            <div className="next" onClick={this.nextClick} />
+          </div>
+          <div className="radio">
+            {this.choices}
+          </div>
         </div>
         <h2 className="track-cards">{sideText}</h2>
         <div className="bottom-space">

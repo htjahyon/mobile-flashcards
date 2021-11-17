@@ -234,9 +234,11 @@ export default class EditCards extends React.Component {
             'Content-Type': 'application/json'
           }
         };
+        const numElement = document.getElementById('index');
         if (this.index > 0 && this.flashcards.length > 1) {
           this.flashcards.splice(index, 1);
           this.index--;
+          numElement.value = this.index + 1;
           fetch(`/api/cards/${cardNum}`, req);
         } else if (this.index === 0 && this.flashcards.length > 1) {
           this.flashcards.splice(index, 1);
@@ -263,6 +265,8 @@ export default class EditCards extends React.Component {
     if (this.flashcards.length >= this.maxCards) return;
     this.saveCard(this.index);
     this.index = this.flashcards.length;
+    const numElement = document.getElementById('index');
+    numElement.value = this.index + 1;
     this.question = true;
     const card = {
       batchId: this.batch.batchId,

@@ -159,6 +159,7 @@
 
   .space,
   .bottom-space {
+    width: 100%;
     display: flex;
     margin-top: 10%;
     justify-content: center;
@@ -224,6 +225,39 @@
     cursor: pointer;
   }
 
+  .multiple-choice {
+    display: block;
+    width: 50px;
+    height: 50px;
+    background-repeat: no-repeat;
+    background-image: url(./mobile-images/multiple-choice2.png);
+    cursor: pointer;
+  }
+
+  .free-response {
+    display: none;
+    width: 50px;
+    height: 50px;
+    background-repeat: no-repeat;
+    background-image: url(./mobile-images/free-response2.png);
+    cursor: pointer;
+  }
+
+  .middle {
+    display: flex;
+  }
+
+  .radio {
+    display: none;
+    width: 250px;
+    margin-top: 5%;
+    flex-direction: column;
+  }
+
+  .radio-dot {
+    justify-content: center;
+  }
+
   .trash {
     width: 15%;
     height: 90px;
@@ -244,6 +278,7 @@
     width: 90%;
     height: 100px;
     border-style: solid;
+    overflow: scroll;
   }
 
   .wrong {

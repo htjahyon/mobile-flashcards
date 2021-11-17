@@ -226,9 +226,11 @@ export default class CreateNew extends React.Component {
             'Content-Type': 'application/json'
           }
         };
+        const numElement = document.getElementById('indexCreate');
         if (this.index > 0 && this.flashcards.length > 1) {
           this.flashcards.splice(index, 1);
           this.index--;
+          numElement.value = this.index + 1;
           fetch(`/api/cards/${cardNum}`, req);
         } else if (this.index === 0 && this.flashcards.length > 1) {
           this.flashcards.splice(index, 1);
@@ -258,6 +260,8 @@ export default class CreateNew extends React.Component {
     this.start = true;
     this.saveCard(this.index);
     this.index = this.flashcards.length;
+    const numElement = document.getElementById('indexCreate');
+    numElement.value = this.index + 1;
     this.question = true;
     const card = {
       batchId: this.batchId,

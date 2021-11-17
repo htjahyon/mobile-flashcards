@@ -232,16 +232,16 @@ export default class Share extends React.Component {
         <div className="users">
           {this.users}
         </div>
-        <h2>My Flashcards</h2>
+        <h2>My Batches</h2>
         <div className="workspace">
           <form>{this.batches}</form>
           {this.button}
         </div>
-        <h2>Received Flashcards</h2>
+        <h2>Received Batches</h2>
         <div className="bullets">
           <form>{this.received}</form>
         </div>
-        <h2>Sent Flashcards</h2>
+        <h2>Sent Batches</h2>
         <div className="bullets">
           <form>{this.sent}</form>
         </div>
