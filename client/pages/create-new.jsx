@@ -36,6 +36,7 @@ export default class CreateNew extends React.Component {
     };
     this.onChangeTitle = this.onChangeTitle.bind(this);
     this.onChangeContent = this.onChangeContent.bind(this);
+    this.onChangeIndex = this.onChangeIndex.bind(this);
     this.saveCard = this.saveCard.bind(this);
     this.saveAll = this.saveAll.bind(this);
     this.deleteAll = this.deleteAll.bind(this);
@@ -47,6 +48,8 @@ export default class CreateNew extends React.Component {
   }
 
   componentDidMount() {
+    const numElement = document.getElementById('indexCreate');
+    numElement.value = 1;
     this.title = this.state.title;
     const batch = {
       userId: this.userId,
@@ -95,6 +98,17 @@ export default class CreateNew extends React.Component {
     this.setState({ content: event.target.value });
   }
 
+  onChangeIndex(event) {
+    const numElement = document.getElementById('indexCreate');
+    this.index = Number(numElement.value) - 1;
+    if (this.index >= 0 && this.index < this.flashcards.length) {
+      this.setState(
+        {
+          content: this.flashcards[this.index].question
+        });
+    }
+  }
+
   saveCard(index) {
     if (this.question) {
       this.flashcards[index].question = this.state.content;
@@ -122,6 +136,13 @@ export default class CreateNew extends React.Component {
 
   saveAll() {
     // save flashcards into a folder
+    const modal = document.querySelector('.modal');
+    modal.style = 'display: flex';
+    window.onclick = function (event) {
+      if (event.target.className === 'ok') {
+        modal.style = 'display: none';
+      }
+    };
     this.title = this.state.title;
     this.saveCard(this.index);
     const batch = {
@@ -168,6 +189,8 @@ export default class CreateNew extends React.Component {
     this.question = true;
     if (this.index > 0) {
       this.index--;
+      const numElement = document.getElementById('indexCreate');
+      numElement.value--;
       this.setState(
         {
           content: this.flashcards[this.index].question
@@ -181,6 +204,8 @@ export default class CreateNew extends React.Component {
     this.question = true;
     if (this.index < this.flashcards.length - 1) {
       this.index++;
+      const numElement = document.getElementById('indexCreate');
+      numElement.value++;
       this.setState(
         {
           content: this.flashcards[this.index].question
@@ -201,9 +226,11 @@ export default class CreateNew extends React.Component {
             'Content-Type': 'application/json'
           }
         };
+        const numElement = document.getElementById('indexCreate');
         if (this.index > 0 && this.flashcards.length > 1) {
           this.flashcards.splice(index, 1);
           this.index--;
+          numElement.value = this.index + 1;
           fetch(`/api/cards/${cardNum}`, req);
         } else if (this.index === 0 && this.flashcards.length > 1) {
           this.flashcards.splice(index, 1);
@@ -233,6 +260,8 @@ export default class CreateNew extends React.Component {
     this.start = true;
     this.saveCard(this.index);
     this.index = this.flashcards.length;
+    const numElement = document.getElementById('indexCreate');
+    numElement.value = this.index + 1;
     this.question = true;
     const card = {
       batchId: this.batchId,
@@ -265,7 +294,7 @@ export default class CreateNew extends React.Component {
       return (
         <div style={style.container}>
           <h1 className="track-cards">Flashcards Deleted!</h1>
-          <img className="trash-can track-cards"></img>
+          <div className="trash-can track-cards"></div>
           <a href="#" className="track-cards">Go Home</a>
         </div>
       );
@@ -273,11 +302,11 @@ export default class CreateNew extends React.Component {
     return (
       <div style={style.container}>
         <div style={style.icons}>
-          <a href="#"><img className="home-icon"></img></a>
-          <img className="save-all" onClick={this.saveAll}></img>
-          <img className="delete-all" onClick={this.deleteAll}></img>
+          <a className="home-icon" href="#"></a>
+          <div className="save-all" onClick={this.saveAll}></div>
+          <div className="delete-all" onClick={this.deleteAll}></div>
         </div>
-        <form className="w-100 create-title">
+        <form className="w-100 create-title">Batch Name:
           <div className="mb-3">
             <input
               required
@@ -290,9 +319,17 @@ export default class CreateNew extends React.Component {
               className="flashcards-title bg-light" />
           </div>
         </form>
-        <h2 className="track-cards">{this.index + 1}/{length}</h2>
+        <h2 className="track-cards">
+          <input
+          required
+          autoFocus
+          id="indexCreate"
+          type="text"
+          name="index"
+          onChange={this.onChangeIndex}
+          className="index bg-light" />/{length}</h2>
         <div className="space">
-          <img className="previous" onClick={this.previousClick} />
+          <div className="previous" onClick={this.previousClick} />
           <form className="w-100">
             <div className="mb-3">
               <textarea
@@ -306,14 +343,18 @@ export default class CreateNew extends React.Component {
                 className="form-control bg-light content" />
             </div>
           </form>
-          <img className="next" onClick={this.nextClick} />
+          <div className="next" onClick={this.nextClick} />
         </div>
         <h2 className="track-cards">{sideText}</h2>
         <div className="bottom-space">
-          <img className="delete" onClick={() => this.deleteCard(this.index)}></img>
-          <img className="question-answer" onClick={this.flipCard}></img>
-          <img className="add" onClick={this.addCard}></img>
+          <div className="delete" onClick={() => this.deleteCard(this.index)}></div>
+          <div className="question-answer" onClick={this.flipCard}></div>
+          <div className="add" onClick={this.addCard}></div>
         </div>
+        <div className="modal">
+          <p className="modalText">Flashcards Saved!</p>
+          <button className="ok">OK</button>
+        </div>;
       </div>
     );
   }

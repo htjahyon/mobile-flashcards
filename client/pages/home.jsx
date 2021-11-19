@@ -8,8 +8,10 @@ const style = {
     flexDirection: 'column'
   },
   icons: {
+    display: 'flex',
     width: '100%',
-    height: '100px'
+    height: '100px',
+    justifyContent: 'center'
   }
 };
 
@@ -75,17 +77,16 @@ export default class Home extends React.Component {
 
   addNewFolder() {
     if (this.state.folders.length >= this.maxFolders) return;
-    let biggest = 1;
+    let biggest = 0;
     for (let i = 0; i < this.state.folders.length; i++) {
       if (this.state.folders[i].folderId > biggest) {
         biggest = this.state.folders[i].folderId;
       }
     }
     const folder = {
-      folderName: 'Folder ' + biggest,
+      folderName: 'Folder ' + ++biggest,
       userId: this.userId
     };
-    this.count++;
     const req = {
       method: 'POST',
       headers: {
@@ -119,7 +120,8 @@ export default class Home extends React.Component {
               }
               if (this.recentArray.length === 0) {
                 this.recentArray.push({
-                  batchId: -1
+                  batchId: -1,
+                  batchName: null
                 });
               }
             })
@@ -180,7 +182,7 @@ export default class Home extends React.Component {
         for (let i = 0; i < end; i++) {
           temp.push(result[i]);
         }
-        this.setState({ received: result });
+        this.setState({ received: temp });
       })
       .catch(error => console.error('getNotSent failed!', error));
   }
@@ -194,13 +196,13 @@ export default class Home extends React.Component {
 
   render() {
     this.addFolder = this.state.folders.length < this.maxFolders
-      ? <img className="add-new-folder" onClick={this.addNewFolder}></img>
+      ? <div className="add-new-folder" onClick={this.addNewFolder}></div>
       : null;
     this.createNew = this.folderClicked && this.state.batches.length < this.maxBatches
-      ? <img className="create-new-flashcards" onClick={() => this.props.setActiveFolder(this.state.openedId)}></img>
+      ? <div className="create-new-flashcards" onClick={() => this.props.setActiveFolder(this.state.openedId)}></div>
       : null;
     this.trash = this.folderClicked && this.state.folders.length > 0
-      ? <img className="trash" onClick={() => this.trashFolder(this.state.openedId)}></img>
+      ? <div className="trash" onClick={() => this.trashFolder(this.state.openedId)}></div>
       : null;
     this.folders = this.state.folders.map(folder => (
       <div className="icon" key={folder.folderId}>
@@ -228,10 +230,10 @@ export default class Home extends React.Component {
     return (
       <div style={style.container}>
         <div style={style.icons}>
-          <a href="#scores"><img className="scores"></img></a>
-          <a href="#edit-cards"><img className="recently-made" onClick={() => this.props.setActiveBatch(this.recentArray.pop())}></img></a>
-          <a href="#share"><img className="share" onClick={() => this.props.setActiveUser(this.userId)}></img></a>
-          <img className="logout" onClick={handleSignOut}></img>
+          <a className="scores" href="#scores"></a>
+          <a className="recently-made" onClick={() => this.props.setActiveBatch(this.recentArray.pop())} href="#edit-cards"></a>
+          <a className="share" onClick={() => this.props.setActiveUser(this.userId)} href="#share"></a>
+          <div className="logout" onClick={handleSignOut}></div>
         </div>
         <h2>My Folders</h2>
         <div className="folders">
@@ -239,12 +241,12 @@ export default class Home extends React.Component {
           {this.addFolder}
           {this.trash}
         </div>
-        <h2>My Flashcards</h2>
+        <h2>My Batches</h2>
         <div className="workspace">
           {this.batches}
           <a href="#create-new">{this.createNew}</a>
         </div>
-        <h2>Flashcards From Other Users</h2>
+        <h2>Batches From Other Users</h2>
         <div className="workspace">
           {this.received}
         </div>

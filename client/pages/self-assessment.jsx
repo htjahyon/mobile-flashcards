@@ -28,13 +28,17 @@ export default class SelfAssessment extends React.Component {
     this.change = false;
     this.color = [];
     this.text = [];
+    this.temp = [];
     this.maxScores = 10;
+    this.choices = null;
     this.state =
     {
       title: this.title,
       content: '',
       text: '',
-      color: null
+      color: null,
+      choices: [],
+      answer: ''
     };
 
     this.checkSpace = this.checkSpace.bind(this);
@@ -44,6 +48,11 @@ export default class SelfAssessment extends React.Component {
     this.flipCard = this.flipCard.bind(this);
     this.correct = this.correct.bind(this);
     this.postResult = this.postResult.bind(this);
+    this.multipleChoice = this.multipleChoice.bind(this);
+    this.freeResponse = this.freeResponse.bind(this);
+    this.match = this.match.bind(this);
+    this.makeChoices = this.makeChoices.bind(this);
+    this.shuffleArray = this.shuffleArray.bind(this);
   }
 
   componentDidMount() {
@@ -90,9 +99,12 @@ export default class SelfAssessment extends React.Component {
         {
           content: this.flashcards[this.index].question,
           text: this.text[this.index],
-          color: this.color[this.index]
+          color: this.color[this.index],
+          answer: this.flashcards[this.index].answer
         }
       );
+      this.makeChoices();
+      this.setState({ choices: this.temp });
     }
   }
 
@@ -104,9 +116,12 @@ export default class SelfAssessment extends React.Component {
         {
           content: this.flashcards[this.index].question,
           text: this.text[this.index],
-          color: this.color[this.index]
+          color: this.color[this.index],
+          answer: this.flashcards[this.index].answer
         }
       );
+      this.makeChoices();
+      this.setState({ choices: this.temp });
     }
   }
 
@@ -152,6 +167,13 @@ export default class SelfAssessment extends React.Component {
   postResult() {
     if (!this.change) return;
     this.checkSpace();
+    const modal = document.querySelector('.modal');
+    modal.style = 'display: flex';
+    window.onclick = function (event) {
+      if (event.target.className === 'ok') {
+        modal.style = 'display: none';
+      }
+    };
     const folderId = this.batch.folderId;
     if (typeof folderId === 'undefined') {
       const score = {
@@ -199,37 +221,117 @@ export default class SelfAssessment extends React.Component {
       .catch(error => console.error('Get folder error!', error));
   }
 
+  multipleChoice() {
+    const spaceElement = document.querySelector('.space');
+    const mcElement = document.querySelector('.multiple-choice');
+    const freeElement = document.querySelector('.free-response');
+    const radioElement = document.querySelector('.radio');
+    const wrongElement = document.querySelector('.wrong');
+    const correctElement = document.querySelector('.correct');
+    spaceElement.style = 'width: 60%';
+    mcElement.style = 'display: none';
+    freeElement.style = 'display: block';
+    radioElement.style = 'display: flex';
+    wrongElement.style = 'display: none';
+    correctElement.style = 'display: none';
+    this.setState({ answer: this.flashcards[this.index].answer });
+    this.makeChoices();
+    this.setState({ choices: this.temp });
+  }
+
+  freeResponse() {
+    const spaceElement = document.querySelector('.space');
+    const freeElement = document.querySelector('.free-response');
+    const mcElement = document.querySelector('.multiple-choice');
+    const radioElement = document.querySelector('.radio');
+    const wrongElement = document.querySelector('.wrong');
+    const correctElement = document.querySelector('.correct');
+    spaceElement.style = 'width: 100%';
+    mcElement.style = 'display: block';
+    freeElement.style = 'display: none';
+    radioElement.style = 'display: none';
+    wrongElement.style = 'display: block';
+    correctElement.style = 'display: block';
+  }
+
+  match(choiceAnswer) {
+    if (this.state.answer === choiceAnswer) {
+      this.correct();
+    } else this.wrong();
+  }
+
+  makeChoices() {
+    const radioInputs = document.getElementsByClassName('radio-dot');
+    for (let i = 0; i < radioInputs.length; i++) {
+      radioInputs[i].checked = false;
+    }
+    this.temp = [];
+    let count = 0;
+    const length = this.flashcards.length < 4 ? this.flashcards.length : 4;
+    for (let i = 0; i < length; i++) {
+      if (count >= length) break;
+      this.temp.push(this.flashcards[this.index + i]);
+      if (this.index + i >= length - 1) i = -this.index - 1;
+      else if (this.index + i >= this.flashcards.length - 1) i = -this.index - 1;
+      count++;
+    }
+    this.shuffleArray(this.temp);
+  }
+
+  shuffleArray(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+  }
+
   render() {
     const sideText = this.question === true
       ? 'Question'
       : 'Answer';
+    this.choices = this.state.choices.map(choice => (
+      <label className="radio-dot" key={choice.id} >
+        <input className="radio-dot" type="radio" name="genre" value={choice.answer} onClick={() => this.match(choice.answer)}/>{choice.answer}
+      </label>
+    ));
     return (
       <div style={style.container}>
         <div style={style.icons}>
-          <a href="#"><img className="home-icon"></img></a>
-          <a href="#scores"><img className="scores2"></img></a>
+          <a href="#"><div className="home-icon"></div></a>
+          <a href="#scores"><div className="scores2"></div></a>
           <div className="stats">
             <span className="title" style={{ color: 'green' }}>Correct: {this.good}</span>
             <span className="title" style={{ color: 'red' }}>Wrong: {this.bad}</span>
             <span className="title" style={{ color: 'gray' }}>Skipped: {this.flashcards.length - this.good - this.bad}</span>
           </div>
-          <a href="#edit-cards"><img className="edit" onClick={() => this.props.setActiveBatch(this.batch)}></img></a>
-          <img className="post" onClick={this.postResult}></img>
+          <a href="#edit-cards"><div className="edit" onClick={() => this.props.setActiveBatch(this.batch)}></div></a>
+          <div className="post" onClick={this.postResult}></div>
+          <div className="multiple-choice" onClick={this.multipleChoice}></div>
+          <div className="free-response" onClick={this.freeResponse}></div>
         </div>
         <h2 className="w-100 create-title">{this.title}</h2>
         <h2 className="track-cards">{this.index + 1}/{this.flashcards.length}</h2>
         <h2 style={this.state.color}>{this.state.text}</h2>
-        <div className="space">
-          <img className="previous" onClick={this.previousClick} />
-          <div className="area">{this.state.content}</div>
-          <img className="next" onClick={this.nextClick} />
+        <div className="middle">
+          <div className="space">
+            <div className="previous" onClick={this.previousClick} />
+            <div className="area">{this.state.content}</div>
+            <div className="next" onClick={this.nextClick} />
+          </div>
+          <div className="radio">
+            {this.choices}
+          </div>
         </div>
         <h2 className="track-cards">{sideText}</h2>
         <div className="bottom-space">
-          <img className="wrong" onClick={this.wrong}></img>
-          <img className="question-answer" onClick={this.flipCard}></img>
-          <img className="correct" onClick={this.correct}></img>
+          <div className="wrong" onClick={this.wrong}></div>
+          <div className="question-answer" onClick={this.flipCard}></div>
+          <div className="correct" onClick={this.correct}></div>
         </div>
+        <div className="modal">
+          <p className="modalText">Score Posted!</p>
+          <button className="ok">OK</button>
+        </div>;
       </div>
     );
   }
