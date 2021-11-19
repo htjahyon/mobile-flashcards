@@ -258,6 +258,7 @@ h2 {
   width: 500px;
   margin-top: 5%;
   flex-direction: column;
+  margin-left: 15%;
 }
 
 .radio-dot {

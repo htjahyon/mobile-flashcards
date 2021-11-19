@@ -28,6 +28,7 @@ export default class SelfAssessment extends React.Component {
     this.change = false;
     this.color = [];
     this.text = [];
+    this.temp = [];
     this.maxScores = 10;
     this.choices = null;
     this.state =
@@ -50,6 +51,8 @@ export default class SelfAssessment extends React.Component {
     this.multipleChoice = this.multipleChoice.bind(this);
     this.freeResponse = this.freeResponse.bind(this);
     this.match = this.match.bind(this);
+    this.makeChoices = this.makeChoices.bind(this);
+    this.shuffleArray = this.shuffleArray.bind(this);
   }
 
   componentDidMount() {
@@ -100,15 +103,8 @@ export default class SelfAssessment extends React.Component {
           answer: this.flashcards[this.index].answer
         }
       );
-      const temp = [];
-      let count = 0;
-      for (let i = this.index; i < 4; i++) {
-        if (count >= 4) break;
-        if (typeof this.flashcards[this.index + i] === 'undefined') i = 0;
-        temp.push(this.flashcards[this.index + i]);
-        count++;
-      }
-      this.setState({ choices: temp });
+      this.makeChoices();
+      this.setState({ choices: this.temp });
     }
   }
 
@@ -124,16 +120,8 @@ export default class SelfAssessment extends React.Component {
           answer: this.flashcards[this.index].answer
         }
       );
-      const temp = [];
-      temp.push(this.flashcards[this.index]);
-      let count = 0;
-      for (let i = this.index; i < 4; i++) {
-        if (count >= 4) break;
-        if (typeof this.flashcards[this.index + i] === 'undefined') i = 0;
-        temp.push(this.flashcards[this.index + i]);
-        count++;
-      }
-      this.setState({ choices: temp });
+      this.makeChoices();
+      this.setState({ choices: this.temp });
     }
   }
 
@@ -234,27 +222,21 @@ export default class SelfAssessment extends React.Component {
   }
 
   multipleChoice() {
-    if (this.flashcards.length < 4) return;
     const spaceElement = document.querySelector('.space');
     const mcElement = document.querySelector('.multiple-choice');
     const freeElement = document.querySelector('.free-response');
     const radioElement = document.querySelector('.radio');
     const wrongElement = document.querySelector('.wrong');
     const correctElement = document.querySelector('.correct');
-    spaceElement.style = 'width: 50%';
+    spaceElement.style = 'width: 60%';
     mcElement.style = 'display: none';
     freeElement.style = 'display: block';
     radioElement.style = 'display: flex';
     wrongElement.style = 'display: none';
     correctElement.style = 'display: none';
     this.setState({ answer: this.flashcards[this.index].answer });
-    const temp = [];
-    temp.push(this.flashcards[this.index]);
-    for (let i = this.index; i < 3; i++) {
-      if (i >= 3) i = 0;
-      temp.push(this.flashcards[i]);
-    }
-    this.setState({ choices: temp });
+    this.makeChoices();
+    this.setState({ choices: this.temp });
   }
 
   freeResponse() {
@@ -278,13 +260,38 @@ export default class SelfAssessment extends React.Component {
     } else this.wrong();
   }
 
+  makeChoices() {
+    const radioInputs = document.getElementsByClassName('radio-dot');
+    for (let i = 0; i < radioInputs.length; i++) {
+      radioInputs[i].checked = false;
+    }
+    this.temp = [];
+    let count = 0;
+    const length = this.flashcards.length < 4 ? this.flashcards.length : 4;
+    for (let i = 0; i < length; i++) {
+      if (count >= length) break;
+      this.temp.push(this.flashcards[this.index + i]);
+      if (this.index + i >= length - 1) i = -this.index - 1;
+      else if (this.index + i >= this.flashcards.length - 1) i = -this.index - 1;
+      count++;
+    }
+    this.shuffleArray(this.temp);
+  }
+
+  shuffleArray(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+  }
+
   render() {
     const sideText = this.question === true
       ? 'Question'
       : 'Answer';
     this.choices = this.state.choices.map(choice => (
       <label className="radio-dot" key={choice.id} >
-        <input type="radio" name="genre" value={choice.answer} onClick={() => this.match(choice.answer)}/>{choice.answer}
+        <input className="radio-dot" type="radio" name="genre" value={choice.answer} onClick={() => this.match(choice.answer)}/>{choice.answer}
       </label>
     ));
     return (
