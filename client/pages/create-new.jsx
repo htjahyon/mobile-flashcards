@@ -40,6 +40,7 @@ export default class CreateNew extends React.Component {
     this.saveCard = this.saveCard.bind(this);
     this.saveAll = this.saveAll.bind(this);
     this.deleteAll = this.deleteAll.bind(this);
+    this.executeDelete = this.executeDelete.bind(this);
     this.previousClick = this.previousClick.bind(this);
     this.nextClick = this.nextClick.bind(this);
     this.deleteCard = this.deleteCard.bind(this);
@@ -164,6 +165,18 @@ export default class CreateNew extends React.Component {
   }
 
   deleteAll() {
+    const deleteModal = document.querySelector('.normalModal');
+    deleteModal.style = 'display: block';
+    const yesNormal = document.querySelector('.yes');
+    yesNormal.addEventListener('click', this.executeDelete);
+    window.onclick = function (event) {
+      if (event.target.className === 'no' || event.target.className === 'yes') {
+        deleteModal.style = 'display: none';
+      }
+    };
+  }
+
+  executeDelete() {
     const req = {
       method: 'DELETE',
       headers: {
@@ -180,6 +193,12 @@ export default class CreateNew extends React.Component {
         .then(res => res.json())
         .then(result => { })
         .catch(error => console.error('Delete cards error!', error));
+    }
+    if (typeof this.shareId !== 'undefined') {
+      fetch(`/api/share/${this.shareId}`, req)
+        .then(res => res.json())
+        .then(result => { })
+        .catch(error => console.error('Delete shareId failed!', error));
     }
     this.setState({ deleteAll: true });
   }
@@ -355,6 +374,11 @@ export default class CreateNew extends React.Component {
           <p className="modalText">Flashcards Saved!</p>
           <button className="ok">OK</button>
         </div>;
+        <div className="normalModal">
+          <p className="deleteText">Are you sure you want to delete this batch?</p>
+          <button className="yes">Yes</button>
+          <button className="no">No</button>
+        </div>
       </div>
     );
   }

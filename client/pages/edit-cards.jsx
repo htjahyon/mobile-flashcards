@@ -39,6 +39,7 @@ export default class EditCards extends React.Component {
     this.saveCard = this.saveCard.bind(this);
     this.saveAll = this.saveAll.bind(this);
     this.deleteAll = this.deleteAll.bind(this);
+    this.executeDelete = this.executeDelete.bind(this);
     this.previousClick = this.previousClick.bind(this);
     this.nextClick = this.nextClick.bind(this);
     this.deleteCard = this.deleteCard.bind(this);
@@ -154,18 +155,22 @@ export default class EditCards extends React.Component {
   }
 
   deleteAll() {
-    let choice = null;
-    if (typeof this.shareId !== 'undefined') {
-      const deleteModal = document.querySelector('.deleteModal');
-      deleteModal.style = 'display: flex';
-      window.onclick = function (event) {
-        if (event.target.className === 'yes' || event.target.className === 'no') {
-          deleteModal.style = 'display: none';
-          choice = event.target.className;
-        }
-      };
-    }
-    if (choice === 'no') return;
+    const deleteModal = typeof this.shareId !== 'undefined'
+      ? document.querySelector('.shareModal')
+      : document.querySelector('.normalModal');
+    deleteModal.style = 'display: block';
+    const yesShare = document.getElementsByClassName('yes')[0];
+    const yesNormal = document.getElementsByClassName('yes')[1];
+    yesShare.addEventListener('click', this.executeDelete);
+    yesNormal.addEventListener('click', this.executeDelete);
+    window.onclick = function (event) {
+      if (event.target.className === 'no' || event.target.className === 'yes') {
+        deleteModal.style = 'display: none';
+      }
+    };
+  }
+
+  executeDelete() {
     const req = {
       method: 'DELETE',
       headers: {
@@ -368,9 +373,14 @@ export default class EditCards extends React.Component {
           <p className="modalText">Flashcards Saved!</p>
           <button className="ok">OK</button>
         </div>
-        <div className="deleteModal">
+        <div className="shareModal">
           <p className="deleteText">Are you sure you want to delete this shared batch? It will also
-             be deleted on inventory side of the user who created it.</p>
+             be deleted from the inventory of the user who created it.</p>
+          <button className="yes">Yes</button>
+          <button className="no">No</button>
+        </div>
+        <div className="normalModal">
+          <p className="deleteText">Are you sure you want to delete this batch?</p>
           <button className="yes">Yes</button>
           <button className="no">No</button>
         </div>

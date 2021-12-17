@@ -249,7 +249,8 @@
 
   .radio {
     display: none;
-    width: 250px;
+    margin: 0;
+    width: 50%;
     margin-top: 5%;
     flex-direction: column;
     overflow: scroll;
@@ -276,7 +277,7 @@
   }
 
   .area {
-    width: 100%;
+    width: 150px;
     height: 100px;
     border-style: solid;
     overflow: scroll;
@@ -405,17 +406,38 @@
     border: solid;
   }
 
-  .modalText {
-    font-size: 12px;
+  .modalText,
+  .deleteText {
+    font-size: 20px;
     text-align: center;
   }
 
-  .ok {
+  .ok,
+  .yes,
+  .no {
     width: 50px;
     height: 25px;
     font-size: 12px;
     justify-content: center;
-    margin-left: 25%;
+    margin-left: 20%;
     cursor: pointer;
+  }
+
+  .shareModal,
+  .normalModal {
+    display: none;
+    flex-direction: column;
+    background-color: white;
+    position: fixed;
+    left: 30%;
+    top: 35%;
+    justify-content: center;
+    align-content: center;
+    width: 200px;
+    height: 250px;
+    font-size: 20px;
+    z-index: 1;
+    overflow: auto;
+    border: solid;
   }
 }

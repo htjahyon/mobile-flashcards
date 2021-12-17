@@ -10,6 +10,7 @@ export default class AuthForm extends React.Component {
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.demo = this.demo.bind(this);
   }
 
   handleChange(event) {
@@ -35,6 +36,36 @@ export default class AuthForm extends React.Component {
         } else if (result.user && result.token) {
           this.props.onSignIn(result);
           this.props.setActiveUser(result.userId);
+        } else {
+          alert('Wrong username or password!');
+        }
+      });
+  }
+
+  demo() {
+    event.preventDefault();
+    const demo = {
+      username: 'DEMO',
+      password: 'hello'
+    };
+    const { action } = this.props;
+    const req = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(demo)
+    };
+    fetch('/api/auth/sign-in', req)
+      .then(res => res.json())
+      .then(result => {
+        if (action === 'sign-up') {
+          window.location.hash = 'sign-in';
+        } else if (result.user && result.token) {
+          this.props.onSignIn(result);
+          this.props.setActiveUser(result.userId);
+        } else {
+          alert('Wrong username or password!');
         }
       });
   }
@@ -86,6 +117,10 @@ export default class AuthForm extends React.Component {
           </small>
           <button type="submit" className="btn btn-primary">
             { submitButtonText }
+          </button>
+            <span className="or">OR</span>
+          <button className="btn btn-secondary demo" onClick={this.demo}>
+              Use Demo Account
           </button>
         </div>
         <div className="modal">

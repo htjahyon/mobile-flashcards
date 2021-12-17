@@ -228,7 +228,7 @@ export default class SelfAssessment extends React.Component {
     const radioElement = document.querySelector('.radio');
     const wrongElement = document.querySelector('.wrong');
     const correctElement = document.querySelector('.correct');
-    spaceElement.style = 'width: 60%';
+    spaceElement.style = 'width: 70%';
     mcElement.style = 'display: none';
     freeElement.style = 'display: block';
     radioElement.style = 'display: flex';
