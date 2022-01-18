@@ -267,12 +267,13 @@ export default class SelfAssessment extends React.Component {
     }
     this.temp = [];
     let count = 0;
-    const length = this.flashcards.length < 4 ? this.flashcards.length : 4;
+    const length = this.flashcards.length < 4
+      ? this.flashcards.length
+      : 4;
     for (let i = 0; i < length; i++) {
       if (count >= length) break;
       this.temp.push(this.flashcards[this.index + i]);
-      if (this.index + i >= length - 1) i = -this.index - 1;
-      else if (this.index + i >= this.flashcards.length - 1) i = -this.index - 1;
+      if (this.index + i >= this.flashcards.length - 1) i = -this.index - 1;
       count++;
     }
     this.shuffleArray(this.temp);
@@ -302,7 +303,7 @@ export default class SelfAssessment extends React.Component {
           <div className="stats">
             <span className="title" style={{ color: 'green' }}>Correct: {this.good}</span>
             <span className="title" style={{ color: 'red' }}>Wrong: {this.bad}</span>
-            <span className="title" style={{ color: 'gray' }}>Skipped: {this.flashcards.length - this.good - this.bad}</span>
+            <span className="title" style={{ color: 'gray' }}>Unanswered: {this.flashcards.length - this.good - this.bad}</span>
           </div>
           <a href="#edit-cards"><div className="edit" onClick={() => this.props.setActiveBatch(this.batch)}></div></a>
           <div className="post" onClick={this.postResult}></div>

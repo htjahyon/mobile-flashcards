@@ -268,13 +268,14 @@ export default class EditCards extends React.Component {
 
   addCard() {
     if (this.flashcards.length >= this.maxCards) return;
+    this.start = true;
     this.saveCard(this.index);
     this.index = this.flashcards.length;
     const numElement = document.getElementById('index');
     numElement.value = this.index + 1;
     this.question = true;
     const card = {
-      batchId: this.batch.batchId,
+      batchId: this.batchId,
       question: 'Add question.',
       answer: 'Add answer.'
     };
